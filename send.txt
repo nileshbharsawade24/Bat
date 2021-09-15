@@ -1,1 +1,0 @@
-Good morning all, this is my first coding on socket programming.
