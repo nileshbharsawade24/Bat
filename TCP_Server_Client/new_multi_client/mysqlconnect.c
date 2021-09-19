@@ -56,6 +56,7 @@ int main(){
 	
 	if(flag==0){
 		printf("[-] Error Something went wrong in validation\n");
+		exit(1);
 	}
 	
 	mysql_free_result(res);
@@ -65,9 +66,5 @@ int main(){
 
 
 	
-
-
-
-
 
 
