@@ -45,14 +45,16 @@ int main(){
 		temp=row[1];
 		temp2=row[2];
 		temp3=row[3];
-	}
+		if((strcmp(sender,temp)==0)&&(strcmp(destination,temp2)==0)&&(strcmp(message_type,temp3)==0))
+        	{
+                	printf("[+] VALIDATION IS OK\n");
+			flag=1;
+			break;
+        	}
+   	
+ 	}
 	
-	if((strcmp(sender,temp)==0)&&(strcmp(destination,temp2)==0)&&(strcmp(message_type,temp3)==0))
-	{
-		printf("[+] VALIDATION IS OK\n");
-	}
-	else
-	{
+	if(flag==0){
 		printf("[-] Error Something went wrong in validation\n");
 	}
 	
