@@ -125,15 +125,11 @@ void main() { //workflow starts here
    message_data *request_message; //struct pointer of message_data type
    printf("Parsing the BMD file: %s\n\n",filename);
    request_message=do_parse(filename); //parse that file into valid BMD format and return the BMD 
- 	                                      //format data in struct pointer
-                                       
-   printf("Parsing Done\n");  //to remove
-
-
-   //establish connection between the MySql and server
+    //establish connection between the MySql and server
    MYSQL* con = connect_mysql();
    printf("Validating BMD...\n"); 
-   validation(con, request_message);
+   
+   validation(con, request_message, filename);
         mysql_close(con);
   }
   close(newsockfd);
@@ -213,29 +209,36 @@ xmlChar* get_element_text(char *node_xpath, xmlDocPtr doc) {
 message_data* do_parse(char *file){
  
     char *docname = file;
+    char *password="63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c";
+    char *username="INV-PROFILE-889712";
     xmlDocPtr doc = load_xml_doc(docname);
     printf("MessageID = %s\n", get_element_text("//MessageID", doc));
     printf("Sender = %s\n", get_element_text("//Sender", doc));
     printf("Destination = %s\n", get_element_text("//Destination", doc));
     printf("MessageType = %s\n", get_element_text("//MessageType", doc));
-    printf("Payload = %s\n\n", get_element_text("//Payload", doc));
-    //xmlFreeDoc(doc);
-    //xmlCleanupParser();
-    //remove(file);
+    printf("Payload = %s\n", get_element_text("//Payload", doc));
+    printf("ReferenceID = %s\n", get_element_text("//ReferenceID", doc));
+    printf("Signature = %s\n\n", get_element_text("//Signature", doc));
+    printf("Parsing Done\n\n"); 
+    /*Authentication of BMD*/
+    
+    if(((strcmp(get_element_text("//Signature", doc),password))==0)&&((strcmp(get_element_text("//ReferenceID", doc),username))==0)){
+    
+   		printf("Authentication is successful.\n");}
+   	else{
+   		printf("Authentication is Wrong\n");
+   		exit(1);
+    	}  //xmlFreeDoc(doc);
+    //xmlFreeDoc(doc); //xmlCleanupParser(); //remove(file);
     message_data *msg;
     msg->Destination=get_element_text("//Destination", doc);
     msg->MessageID=get_element_text("//MessageID", doc);
     msg->MessageType=get_element_text("//MessageType", doc);
     msg->Payload=get_element_text("//Payload", doc);
     msg->Sender=get_element_text("//Sender", doc);
+    msg->ReferenceID=get_element_text("//ReferenceID", doc);
     return msg;
-    /*
-     * char *MessageID = get_element_text("//MessageID", doc);
-     * char *Sender = get_element_text("//Sender", doc);
-     * char *Destination = get_element_text("//Destination", doc);
-     * char *MessageType = get_element_text("//MessageType", doc);
-     * char *Payload = get_element_text("//Payload", doc);
-     */
+    
 }
 
 

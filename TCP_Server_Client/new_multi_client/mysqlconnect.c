@@ -18,31 +18,38 @@ typedef struct {
     char *Destination;
     char *MessageType;
     char *Payload;
+    char *ReferenceID;
 }message_data;
 
  /* fuction to insert the data to mysql*/
 
-void insert(MYSQL* con, message_data *msg){
+void insert(MYSQL* con, message_data *msg,char *filename){
 			 
-	char* q = (char *) malloc (300);
+	char* q = (char *) malloc (500);
 	q[0]='\0';
-			
-	char *sender = msg->Sender;
-	char *dest= msg->Destination;
-	char *messageID= msg->MessageID;
-	char* messageType=msg->MessageType;
-	strcat(q,"insert into esb_request(sender_id,dest_id, message_id, message_type) values ('");
-	strcat(q, sender);
+	strcat(q,"insert into esb_request(sender_id,dest_id, message_id, message_type,data_location,status,status_details,reference_id,received_on) values ('");
+	strcat(q, msg->Sender);
 	strcat(q, "', '");
-	strcat(q,dest);
+	strcat(q,msg->Destination);
 	strcat(q, "', '");
-	strcat(q,messageID);
+	strcat(q,msg->MessageID);
 	strcat(q, "', '");
-	strcat(q, messageType);
-	strcat(q, " ')");
-
-	//printf("%s\n",q);
-	int checker=mysql_query(con,q);
+	strcat(q, msg->MessageType);
+	strcat(q, "', '");
+	strcat(q, "/home/pavankolur/Bat/TCP_Server_Client/new_multi_client/");
+	strcat(q, "', '");
+	strcat(q, "Received");
+	strcat(q, "', '");
+	strcat(q, "Available");
+	strcat(q, "', '");
+	strcat(q, msg->ReferenceID);
+	strcat(q, "', ");
+	strcat(q, "now()");
+	strcat(q, " )");
+	if(mysql_query(con,q)){
+	fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
+	 exit(1);
+	 }
 	q=NULL;
 			
         }
@@ -69,7 +76,7 @@ MYSQL* connect_mysql(){
 	
  /*validation of BMD*/
 	
-void validation(MYSQL* con,message_data *msg){
+void validation(MYSQL* con,message_data *msg,char *file){
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char *temp,*temp2,*temp3;
@@ -91,8 +98,10 @@ void validation(MYSQL* con,message_data *msg){
         	{
                 	printf("[+] VALIDATION IS OK\n");
 			flag=1;
-			insert(con,msg);
-			printf("Inserting the parsed data into esb_request table.\n");
+			
+			insert(con,msg,file);
+			
+			printf("Data inserted to esb_request table.\n");
         		break;
    	
  		}

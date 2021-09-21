@@ -15,6 +15,7 @@ typedef struct {
     char *Destination;
     char *MessageType;
     char *Payload;
+    char *ReferenceID;
 }message_data;
 
 void insert(MYSQL* con, message_data *msg);
