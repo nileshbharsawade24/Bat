@@ -16,7 +16,7 @@
 
 * Server
     * run " TCP_Server_Client/src/Server/server.sh " to compile and create executable file on server side
-    * run ./main
+    * run ./server
 
         
 * Client

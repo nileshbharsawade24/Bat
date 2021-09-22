@@ -1,1 +1,1 @@
-gcc -o client clientRef.c
+gcc -o client client.c
