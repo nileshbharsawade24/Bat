@@ -5,12 +5,13 @@
 #include"string.h"  
 #include"netinet/in.h"  
 #include"netdb.h"
+#include<unistd.h>
   
 #define PORT 4444 
 #define BUF_SIZE 2000 
 #define SIZE 1024
 
-void send_file(FILE *fp, int sockfd){
+void send_file(FILE *fp,int sockfd){
   int n;
   char data[SIZE] = {0};
 
@@ -21,6 +22,7 @@ void send_file(FILE *fp, int sockfd){
     }
     bzero(data, SIZE);
   }
+  
 }
   
 int main(int argc, char**argv) {  
@@ -32,7 +34,7 @@ int main(int argc, char**argv) {
  FILE *fp;
 
  if (argc < 2) {
-  printf("usage: client < ip address >\n");
+  printf("Enter the Filename :\n");
   exit(1);  
  }
 
@@ -75,6 +77,13 @@ int main(int argc, char**argv) {
   printf("[+]File data sent successfully.\n");
 
   printf("[+]Closing the connection.\n");
+
+
+  //here, for demo purpose it is alive until client closes it, otherwise no meaning
+  // int x=0;
+  // scanf("%d",x);
+  //to here
+
   close(sockfd);
   
  return 0;    
