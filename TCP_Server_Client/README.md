@@ -12,12 +12,13 @@
     * Enviroment requirement specific commands for Redhat/Centos/Fedora Distro
         * yum install mysql-devel -y
 
-* Running ESB_TCP
-    * Server
-        * run " Source/Server/server.sh " to compile and create executable file on server side
-        * run ./main
+## Running ESB_TCP
+
+* Server
+    * run " Source/Server/server.sh " to compile and create executable file on server side
+    * run ./main
 
         
-    * Client
-        * run " Source/Client/client.sh " to compile and create executable file on client side
-        * run ./client
+* Client
+    * run " Source/Client/client.sh " to compile and create executable file on client side
+    * run ./client
