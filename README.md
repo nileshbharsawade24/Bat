@@ -15,10 +15,10 @@
 ## Running ESB_TCP
 
 * Server
-    * run " Source/Server/server.sh " to compile and create executable file on server side
+    * run " TCP_Server_Client/src/Server/server.sh " to compile and create executable file on server side
     * run ./main
 
         
 * Client
-    * run " Source/Client/client.sh " to compile and create executable file on client side
+    * run " TCP_Server_Client/src/Client/client.sh " to compile and create executable file on client side
     * run ./client
