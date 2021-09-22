@@ -87,7 +87,7 @@ void validation(MYSQL* con,message_data *msg,char *file){
 
 	res = mysql_store_result(con);
 	
-	while(row=mysql_fetch_row(res))
+	while(row=mysql_fetch_row(res))// this is used to fetch each column.
 	{
 		//printf("%s\t%s\t%s\t%s\t%s\n",row[0],row[1],row[2],row[3],row[4]);
 	

@@ -16,7 +16,8 @@ typedef struct {
     char *MessageType;
     char *Payload;
     char *ReferenceID;
-}message_data;
+}message_data;  //It is used to return the entire data that we have mentioned in the struct after parsing.
+
 
 void insert(MYSQL* con, message_data *msg);
 
