@@ -211,7 +211,7 @@ message_data* do_parse(char *file){
  
     char *docname = file;
     char *password="63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c";
-    char *username="INV-PROFILE-889712";
+    char *sender="756E2EAA-1D5B-4BC0-ACC4-4CEB669408DA";
     xmlDocPtr doc = load_xml_doc(docname);
     printf("MessageID = %s\n", get_element_text("//MessageID", doc));
     printf("Sender = %s\n", get_element_text("//Sender", doc));
@@ -223,7 +223,7 @@ message_data* do_parse(char *file){
     printf("Parsing Done\n\n"); 
     /*Authentication of BMD*/
     
-    if(((strcmp(get_element_text("//Signature", doc),password))==0)&&((strcmp(get_element_text("//ReferenceID", doc),username))==0)){
+    if(((strcmp(get_element_text("//Signature", doc),password))==0)&&((strcmp(get_element_text("//Sender", doc),sender))==0)){
     
    		printf("Authentication is successful.\n");}
    	else{
