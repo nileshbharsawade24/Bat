@@ -1,8 +1,8 @@
 #include <libxml2/libxml/parser.h>
 #include <libxml2/libxml/xpath.h>
-#include <libxml2/libxml/xmlversion.h>
 #include  <stdio.h>
 #include <stdlib.h>
+#include"mysqlconnect.h"
 xmlDocPtr load_xml_doc(char *xml_file_path) {
     xmlDocPtr doc = xmlParseFile(xml_file_path);
     if (doc == NULL) {
@@ -40,6 +40,8 @@ xmlXPathObjectPtr get_nodes_at_xpath(xmlDocPtr doc, xmlChar *xpath) {
 /**
  * Returns the text value of an XML element. It is expected that
  * there is only one XML element at the given xpath in the XML.
+ * 
+ *  
  */
 xmlChar* get_element_text(char *node_xpath, xmlDocPtr doc) {
     xmlChar *node_text;
@@ -60,25 +62,38 @@ xmlChar* get_element_text(char *node_xpath, xmlDocPtr doc) {
     return node_text;
 }
 
-/**
- * Following XML sample is used to test this program.
- *
-Output expected is:
-    MessageID=A9ECAEF2-107A-4452-9553-043B6D25386E
-    Sender=756E2EAA-1D5B-4BC0-ACC4-4CEB669408DA
-    Destination=6393F82F-4687-433D-AA23-1966330381FE
-    MessageType=CreditReport
-    Payload=001-01-1234
-*/
-int main(int argc, char **argv) {
-    char *docname = "BMD.xml";
+
+message_data* do_parse(char *file){
+ 
+    char *docname = file;
+    char *password="63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c";
+    char *sender="756E2EAA-1D5B-4BC0-ACC4-4CEB669408DA";
     xmlDocPtr doc = load_xml_doc(docname);
-    printf("MessageID=%s\n", get_element_text("//MessageID", doc));
-    printf("Sender=%s\n", get_element_text("//Sender", doc));
-    printf("Destination=%s\n", get_element_text("//Destination", doc));
-    printf("MessageType=%s\n", get_element_text("//MessageType", doc));
-    printf("Payload=%s\n", get_element_text("//Payload", doc));
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
-    return 1;
+    printf("MessageID = %s\n", get_element_text("//MessageID", doc));
+    printf("Sender = %s\n", get_element_text("//Sender", doc));
+    printf("Destination = %s\n", get_element_text("//Destination", doc));
+    printf("MessageType = %s\n", get_element_text("//MessageType", doc));
+    printf("Payload = %s\n", get_element_text("//Payload", doc));
+    printf("ReferenceID = %s\n", get_element_text("//ReferenceID", doc));
+    printf("Signature = %s\n\n", get_element_text("//Signature", doc));
+    printf("Parsing Done\n\n"); 
+    /*Authentication of BMD*/
+    
+    if(((strcmp(get_element_text("//Signature", doc),password))==0)&&((strcmp(get_element_text("//Sender", doc),sender))==0)){
+    
+   		printf("Authentication is successful.\n");}
+   	else{
+   		printf("Authentication is Wrong\n");
+   		exit(1);
+    	}  //xmlFreeDoc(doc);
+    //xmlFreeDoc(doc); //xmlCleanupParser(); //remove(file);
+    message_data *msg;
+    msg->Destination=get_element_text("//Destination", doc);
+    msg->MessageID=get_element_text("//MessageID", doc);
+    msg->MessageType=get_element_text("//MessageType", doc);
+    msg->Payload=get_element_text("//Payload", doc);
+    msg->Sender=get_element_text("//Sender", doc);
+    msg->ReferenceID=get_element_text("//ReferenceID", doc);
+    return msg;
+    
 }
