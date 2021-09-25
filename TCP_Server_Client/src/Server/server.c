@@ -15,22 +15,6 @@
 #define SIZE 1024
 
 
-//struct for input message body and metadata
-// typedef struct {
-//     char *MessageID;
-//     char *Sender;
-//     char *Destination;
-//     char *MessageType;
-//     char *Payload;
-//     char *ReferencdID;
-// }message_data;
-
-
-
-
-
-//void do_parse(char *file) which will parse the input file to the actual data(into struct);
-
 // to write the file in temporary file in directory with return as that filename
 char* write_file(int sockfd){  
   int n;
@@ -58,26 +42,29 @@ char* write_file(int sockfd){
 
 
 void main() { //workflow starts here
- struct sockaddr_in addr, cl_addr;
- int sockfd, len, ret, newsockfd;
- char buffer[BUF_SIZE];
- pid_t childpid;
- char clientAddr[CLADDR_LEN];
- char* filename;
+ struct sockaddr_in addr, cl_addr;  // Socket Variable declaration
+ int sockfd, len, ret, newsockfd;   // Socket Variable declaration
+ char buffer[BUF_SIZE];             // buffer size of declared BUF_SIZE
+ pid_t childpid;                    // socket childpid
+ char clientAddr[CLADDR_LEN];       // socket client address
+ char* filename;                    // filename to send in string
  
- sockfd = socket(AF_INET, SOCK_STREAM, 0);
+ sockfd = socket(AF_INET, SOCK_STREAM, 0);  // creating socket
  if (sockfd < 0) {
   printf("Error creating socket!\n");
   exit(1);
  }
  printf("Socket created...\n");
  
- memset(&addr, 0, sizeof(addr));
- addr.sin_family = AF_INET;
+ memset(&addr, 0, sizeof(addr));            // filling memory with a constant byte
+
+
+// assigning structure values
+ addr.sin_family = AF_INET;                 
  addr.sin_addr.s_addr = INADDR_ANY;
  addr.sin_port = PORT;
 
- ret = bind(sockfd, (struct sockaddr *) &addr, sizeof(addr));
+ ret = bind(sockfd, (struct sockaddr *) &addr, sizeof(addr));  // binding socket
  if (ret < 0) {
   printf("Error binding!\n");
   exit(1);
@@ -85,17 +72,13 @@ void main() { //workflow starts here
  printf("Binding done...\n");
 
  printf("Waiting for a connection...\n");
- listen(sockfd, 5);
+ listen(sockfd, 5);                                           // Listening socket file discripter
 
 
-
- 
-
-
- for (;;) { //infinite loop
+ for (;;) { //infinite loop to listen continous connection made by client
   len = sizeof(cl_addr);
   
-  newsockfd = accept(sockfd, (struct sockaddr *) &cl_addr, &len);
+  newsockfd = accept(sockfd, (struct sockaddr *) &cl_addr, &len); // making connection
   if (newsockfd < 0) {
 //    printf("Error accepting connection!\n");  //when client closes, throws error accepting connection
    exit(1);
@@ -116,26 +99,26 @@ void main() { //workflow starts here
 
 
    
-   filename=write_file(newsockfd); //send to write the input file into directory and return that
-                                   // filename
+   filename=write_file(newsockfd);  //send to write the input file into directory and return that filename
    
-   printf("Reading done\n");  //to remove
-   message_data *request_message; //struct pointer of message_data type
+   printf("Reading done\n");
+   message_data *request_message;   // struct pointer of message_data type
+
    printf("Parsing the BMD file: %s\n\n",filename);
-   request_message=do_parse(filename); //parse that file into valid BMD format and return the BMD 
-    //establish connection between the MySql and server
-   MYSQL* con = connect_mysql();
+   request_message=do_parse(filename);  // parse that file into valid BMD format and return the BMD 
+  
+  
+   MYSQL* con = connect_mysql();        // establish connection between the MySql and server
    printf("Validating BMD...\n"); 
    
-   validation(con, request_message, filename);
-        mysql_close(con);
+   validation(con, request_message, filename);  // Validation by using Validation Function Call
+
+    mysql_close(con);                   // Closing Resources
   }
-  close(newsockfd);
+  close(newsockfd);                     // Closing Resources
  }
 
 }
-
-
 
 
 

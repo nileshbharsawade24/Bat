@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<mysql/mysql.h>
 #include<string.h>
-static char *host = "localhost";
+static char *host = "localhost";		// MySQL required variables
 static char *user = "root";
 static char *pass = "Prideoflion@01";
 static char *dbname = "pavan";
@@ -25,7 +25,7 @@ typedef struct {
 
 void insert(MYSQL* con, message_data *msg,char *filename){
 			 
-	char* q = (char *) malloc (500);
+	char* q = (char *) malloc (500); // memory allocation to string query which nis going to be concated tor insert query
 	q[0]='\0';
 	strcat(q,"insert into esb_request(sender_id,dest_id, message_id, message_type,data_location,status,status_details,reference_id,received_on) values ('");
 	strcat(q, msg->Sender);
@@ -50,16 +50,17 @@ void insert(MYSQL* con, message_data *msg,char *filename){
 	fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
 	 exit(1);
 	 }
-	q=NULL;
+	q=NULL;							// Free the allocated memory
 			
         }
 
  /* mysql server connection and validation of BMD file*/
 
+// establish connection with returning MYSQL Type(Struct)
 MYSQL* connect_mysql(){
 	MYSQL *con;
 	
-	char *temp,*temp2,*temp3;
+	//char *temp,*temp2,*temp3;
 
 	con= mysql_init(NULL);// this fun initalizes the headerfiles i.e mysql.h
 	

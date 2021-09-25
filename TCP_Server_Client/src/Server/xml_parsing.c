@@ -3,6 +3,9 @@
 #include  <stdio.h>
 #include <stdlib.h>
 #include"mysqlconnect.h"
+
+
+
 xmlDocPtr load_xml_doc(char *xml_file_path) {
     xmlDocPtr doc = xmlParseFile(xml_file_path);
     if (doc == NULL) {
