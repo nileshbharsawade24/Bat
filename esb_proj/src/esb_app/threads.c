@@ -13,38 +13,27 @@ unsigned int flag=0;
 MYSQL *con;
 MYSQL_RES *res;
 MYSQL_ROW row;
-/*typedef struct {
- 	char *status;
- 	char *id;
- 	char *pro_atmpts;
-}mysql_data;*/
-char *temp2;
-char *temp1;
-int temp3;
- int child_thread(char *temp1, char *temp2, int temp3){
+char *status;
+char *id;
+int attempts;
+ void* child_thread(char *id){
 	printf("Child thread started to process the received BMD request\n");
-	  //mysql_data->status="Taken";
-	  //data->pro_atmpts++;
-	//temp3++;
+	
+	  char p[20000];
+	  snprintf(p,sizeof(p),"update esb_request set status='Taken',processing_attempts=processing_attempts+1 where id=%s",id);
 	  
-	  //printf("%d",temp3);
-	  char* p = (char *) malloc (500);
-	p[0]='\0';
-	  strcat(p,"update esb_request set status='Taken',processing_attempts=2");
-	  
-	  strcat(p," where id=18;");
-	  
-	  	
+	  	//printf("%s\n",p);
 	  if(mysql_query(con,p)){fprintf(stderr,"ERROR: %s [%d]\n",mysql_error(con),mysql_errno(con));
 			exit(1);}
 	  
-	  printf("updated to Taken at id = %s\n",temp1);
-	  p=NULL;
-	  return 0;
+	  printf("\n************** Status Updated Sucessfully at id=%s ****************\n\n",id);
+	  
+	  p[20000]='\0';
+	  //return 0;
 	  }
 
 void start_esb_request_poller_thread(){
-//pthread_t childthread;
+pthread_t childthread;
 //mysql_data *data;
 
 	while(true){
@@ -59,27 +48,28 @@ void start_esb_request_poller_thread(){
 	  	{
 	 	for(int i=0;i<=10;i++){
 	 	
-			printf("%s | ",row[i]);
+			//printf("%s | ",row[i]);
 			if(i==10){
-				temp1=row[0];
-				temp2=row[8];
-				temp3=row[10];}
+				id=row[0];
+				status=row[8];
+				attempts=row[10];}
 				
 			}
 		}
 		
 		//printf("\n%s\n%s\n%s\n",temp1,temp2,temp3);
 			
-			if(temp2!='\0')
+			if(status!='\0')
 			{
 				printf("\nReceived New BMD request, Ready to process the BMD.\n");
-				//pthread_create(&childthread,NULL,&child_thread,&data);
-				child_thread(temp1,temp2,temp3);
-				temp2='\0';
+				if(pthread_create(&childthread,NULL,&child_thread,id)){
+				printf("unable to create the Childthread\n");}
+				//child_thread(id);
+				status='\0';
 				
 				//pthread_join(&childthread,NULL);	
  	  		}
- 	  	 		else{printf("No Request Available.");}
+ 	  	 		else{printf("\n****************** No Request Available in esb_request.*******************\n");}
  	  	
  		printf("\n");
  		sleep(5);
