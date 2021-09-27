@@ -38,9 +38,9 @@ void insert(MYSQL* con, message_data *msg,char *filename){
 	strcat(q, "', '");
 	strcat(q, "/home/pavankolur/Bat/TCP_Server_Client/new_multi_client/");
 	strcat(q, "', '");
-	strcat(q, "Received");
-	strcat(q, "', '");
 	strcat(q, "Available");
+	strcat(q, "', '");
+	strcat(q, "Yet to process");
 	strcat(q, "', '");
 	strcat(q, msg->ReferenceID);
 	strcat(q, "', ");
