@@ -143,11 +143,19 @@ transport check_transport(char *id){
 	  if(strcmp(t.transport_key,"SMTP")){
 	  printf("transporting via SMTP\n");
 	  //put function call for transport via SMTP here;
+<<<<<<< HEAD
 	  }
 	  if(strcmp(t.transport_key,"HTTP")){
 	  printf("transporting via HTTP\n");
 	  //put function call for transport via HTTP here;
 	  }
+=======
+	  }
+	  if(strcmp(t.transport_key,"HTTP")){
+	  printf("transporting via HTTP\n");
+	  //put function call for transport via HTTP here;
+	  }
+>>>>>>> 986a2367745068aa51edee322728068f02d5dfdc
 	  
 	  
 	}  
