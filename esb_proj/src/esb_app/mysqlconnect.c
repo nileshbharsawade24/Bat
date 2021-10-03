@@ -35,8 +35,9 @@ void insert(MYSQL* con, message_data *msg,char *filename){
 	strcat(q,msg->MessageID);
 	strcat(q, "', '");
 	strcat(q, msg->MessageType);
-	strcat(q, "', '");
-	strcat(q, "/home/pavankolur/Bat/TCP_Server_Client/new_multi_client/");
+	strcat(q, "', './");
+	//strcat(q, "./");
+	strcat(q, filename);
 	strcat(q, "', '");
 	strcat(q, "Available");
 	strcat(q, "', '");
