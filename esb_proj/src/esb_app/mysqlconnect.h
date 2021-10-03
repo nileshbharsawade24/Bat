@@ -6,7 +6,7 @@
 #include<string.h>
 static char *host = "localhost";
 static char *user = "root";
-static char *pass = "Nilesh@024";
+static char *pass = "Prideoflion@01";
 static char *dbname = "pavan";
 
 typedef struct {

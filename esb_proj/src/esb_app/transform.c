@@ -25,8 +25,8 @@ char* transform_to_csv(char* source, char* payload)
   mkstemp(filename);
   char *file=filename;
   char op[20001];
-  snprintf(op,sizeof(op),"{\n\tsource: %s,\n\tpayload: %s\n}",source,payload);
-  printf("successfully transformed to csv with data....%s\n",op);
+  snprintf(op,sizeof(op),"source\tpayload\n%s\t%s\n",source,payload);
+  printf("successfully transformed to csv with data....\n%s\n",op);
   FILE *fp = fopen( filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
