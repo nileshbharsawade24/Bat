@@ -19,6 +19,6 @@ typedef struct {
 }message_data;  //It is used to return the entire data that we have mentioned in the struct after parsing.
 
 
-void insert(MYSQL* con, message_data *msg);
-
+void insert(MYSQL* con, message_data *msg,char *filename);
+void validation(MYSQL* con, message_data *msg,char *file);
 MYSQL* connect_mysql();

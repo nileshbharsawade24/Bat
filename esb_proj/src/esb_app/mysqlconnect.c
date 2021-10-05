@@ -52,8 +52,7 @@ void insert(MYSQL* con, message_data *msg,char *filename){
 	 exit(1);
 	 }
 	q=NULL;							// Free the allocated memory
-			
-        }
+}
 
  /* mysql server connection and validation of BMD file*/
 
@@ -78,7 +77,7 @@ MYSQL* connect_mysql(){
 	
  /*validation of BMD*/
 	
-void validation(MYSQL* con,message_data *msg,char *file){
+void validation(MYSQL* con, message_data *msg,char *file){
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char *temp,*temp2,*temp3;
@@ -86,17 +85,13 @@ void validation(MYSQL* con,message_data *msg,char *file){
 			fprintf(stderr,"ERROR: %s [%d]\n",mysql_error(con),mysql_errno(con));
 			exit(1);
 	}
-
+		//printf("yes=:%s\n",file);
 	res = mysql_store_result(con);
 	
 	while(row=mysql_fetch_row(res))// this is used to fetch each column.
 	{
-		//printf("%s\t%s\t%s\t%s\t%s\n",row[0],row[1],row[2],row[3],row[4]);
-	
-		temp=row[1];
-		temp2=row[2];
-		temp3=row[3];
-		if((strcmp(msg->Sender,temp)==0)&&(strcmp(msg->Destination,temp2)==0)&&(strcmp(msg->MessageType,temp3)==0))
+								
+		if((strcmp(msg->Sender,row[1])==0)&&(strcmp(msg->Destination,row[2])==0)&&(strcmp(msg->MessageType,row[3])==0))
         	{
                 	printf("[+] VALIDATION IS OK\n");
 			flag=1;
@@ -104,16 +99,19 @@ void validation(MYSQL* con,message_data *msg,char *file){
 			insert(con,msg,file);
 			
 			printf("Data inserted to esb_request table.\n");
+			printf("**************************************\n\n");
         		break;
    	
- 		}
+ 		    }
+ 		   
+ 		   
  	}
 	
 	if(flag==0){
 		printf("[-] Error Something went wrong in validation\n");
 		exit(1);
 		}
-	
+
 }
 
 

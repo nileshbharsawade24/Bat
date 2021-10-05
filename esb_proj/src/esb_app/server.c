@@ -47,7 +47,7 @@ void main() { //workflow starts here
  char buffer[BUF_SIZE];             // buffer size of declared BUF_SIZE
  pid_t childpid;                    // socket childpid
  char clientAddr[CLADDR_LEN];       // socket client address
- char* filename;                    // filename to send in string
+ char *filename;                    // filename to send in string
  
  sockfd = socket(AF_INET, SOCK_STREAM, 0);  // creating socket
  if (sockfd < 0) {
@@ -88,7 +88,8 @@ void main() { //workflow starts here
 
 
   inet_ntop(AF_INET, &(cl_addr.sin_addr), clientAddr, CLADDR_LEN); //convert from an internet address in binary format
-  if ((childpid = fork()) == 0) { //using fork, creates its another copy i.e. creating a child process
+  if ((childpid = fork()) == 0)
+  { 								//using fork, creates its another copy i.e. creating a child process
    printf("Child created\n");
    close(sockfd); 
    printf("Main Terminated\n");
@@ -100,8 +101,8 @@ void main() { //workflow starts here
 
    
    filename=write_file(newsockfd);  //send to write the input file into directory and return that filename
-   
-   printf("Reading done\n");
+  // char *file=filename;
+   printf("Reading done..\n");
    message_data *request_message;   // struct pointer of message_data type
 
    printf("Parsing the BMD file: %s\n\n",filename);
@@ -111,7 +112,7 @@ void main() { //workflow starts here
    MYSQL* con = connect_mysql();        // establish connection between the MySql and server
    printf("Validating BMD...\n"); 
    
-   validation(con, request_message, filename);  // Validation by using Validation Function Call
+   validation(con,request_message,filename);  // Validation by using Validation Function Call
 
     mysql_close(con);                   // Closing Resources
   }

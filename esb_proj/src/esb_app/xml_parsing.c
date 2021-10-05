@@ -2,10 +2,9 @@
 #include <libxml2/libxml/xpath.h>
 #include  <stdio.h>
 #include <stdlib.h>
+#include<string.h>
 #include"mysqlconnect.h"
-
-
-
+void Authentication(char *sign);
 xmlDocPtr load_xml_doc(char *xml_file_path) {
     xmlDocPtr doc = xmlParseFile(xml_file_path);
     if (doc == NULL) {
@@ -81,14 +80,10 @@ message_data* do_parse(char *file){
     printf("Signature = %s\n\n", get_element_text("//Signature", doc));
     printf("Parsing Done\n\n"); 
     /*Authentication of BMD*/
+    char *sign=get_element_text("//Signature", doc);
     
-    if(((strcmp(get_element_text("//Signature", doc),password))==0)&&((strcmp(get_element_text("//Sender", doc),sender))==0)){
-    
-   		printf("Authentication is successful.\n");}
-   	else{
-   		printf("Authentication is Wrong\n");
-   		exit(1);
-    	}  //xmlFreeDoc(doc);
+    Authentication(sign);//function defination is in Authentication.c file 
+     //xmlFreeDoc(doc);
     //xmlFreeDoc(doc); //xmlCleanupParser(); //remove(file);
     message_data *msg;
     msg->Destination=get_element_text("//Destination", doc);
@@ -97,6 +92,7 @@ message_data* do_parse(char *file){
     msg->Payload=get_element_text("//Payload", doc);
     msg->Sender=get_element_text("//Sender", doc);
     msg->ReferenceID=get_element_text("//ReferenceID", doc);
+    
     return msg;
     
 }
