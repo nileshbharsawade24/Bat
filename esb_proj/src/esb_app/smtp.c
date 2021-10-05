@@ -1,8 +1,14 @@
+/* command to compile
+  gcc -o email smtp.c -lcurl
+ run ./email
+ */
+
+
 #include <stdio.h>
 #include <string.h>
 #include <curl/curl.h>
 #include "smtp.h"
-#define FROM_ADDR    "<pavankolur2000@gmail.com>"
+#define FROM_ADDR    "<esb.proj2021.bat@gmail.com>"
 #define CC_ADDR      "<pavankolur121@gmail.com>"
 
 int send_mail(char *to, char *text) { 
@@ -17,8 +23,8 @@ int send_mail(char *to, char *text) {
   curl = curl_easy_init();
   if(curl) {
     /* This is the URL for your mailserver */ 
-    curl_easy_setopt(curl, CURLOPT_USERNAME, "pavankolur2000@gmail.com");
-    curl_easy_setopt(curl, CURLOPT_PASSWORD, "prideoflion");//enter password
+    curl_easy_setopt(curl, CURLOPT_USERNAME, "esb.proj2021.bat@gmail.com");
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, "bat2021@esb");//enter password
 
     curl_easy_setopt(curl, CURLOPT_URL, "smtp://smtp.gmail.com:587/");
     curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
@@ -48,13 +54,13 @@ int send_mail(char *to, char *text) {
     curl_slist_free_all(recipients);
     curl_easy_cleanup(curl);
   }
-  printf("...............................Mail sent successfully..............................\n");
+  printf("\n********| \"Mail sent successfully\" |********\n");
  return 0;
 }
-int main()
+/*int main()
 {
  // char *s = "HELL0";
-  int n=send_mail("pavana.1si17ee023@gmail.com","/home/pavankolur/Bat/esb_proj/src/esb_app/Output.json");
+  int n=send_mail("pavankolur2000@gmail.com","/home/pavankolur/Bat/esb_proj/src/esb_app/output_1.json");
   
-}
+}*/
 

@@ -1,40 +1,15 @@
-/* command to run-
-gcc -o threads threads.c mysqlconnect.h xml_parsing.c transform.c -lpthread $(mysql_config --cflags --libs) $(xml2-config --cflags --libs)
+/*gcc -o threads threads.c mysqlconnect.h xml_parsing.c transform.c smtp.c status.c -lpthread -lcurl $(mysql_config --cflags --libs) $(xml2-config --cflags --libs)
 
 ./threads
 */
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <mysql/mysql.h>
-#include <string.h>
-#include <pthread.h>
-#include"mysqlconnect.h"
-#include"xml_parsing.h"
-#include"transform.h"
-
-#define DETAILS "select sender_id,dest_id,message_type from esb_request where id=%s"
-#define ROUTE_ID "select route_id from routes where sender='%s' && destination='%s' && message_type='%s'"
-
+#include"threads.h"
+#include"status.h"
 static char *unix_socket = NULL;
-
-unsigned int port = 3306; // active port in which mysql is running.
+unsigned int port = 3306; // mysql-server port number
 unsigned int flag = 0;
 
-MYSQL *con;
-MYSQL_RES *res, *res2;
-MYSQL_ROW row, row1;
-char *status, *sender, *dest, *msg_type;
-char *id, *route_id;
-int attempts;
-
-typedef struct
-{
-	char *transport_key;
-	char *transport_value;
-} transport; //struct for storing the data from transport_config table.
-
+/*below check_transform() function returns the "JSON" or"CSV" or"XML" string as transform_key which extracted from the transform_config table for the perticular sender,dest,msg_type.*/
 
 char *check_transform(char *id)
 {
@@ -96,6 +71,8 @@ char *check_transform(char *id)
 	return transform_key;
 }
 
+/*below check_transport() function returns the structure that includes transport_key i.e "HTTP" or "SMTP",tansport_value which is extracted from the transport_config table for the perticular sender,dest,msg_type.*/
+
 transport check_transport(char *id)
 {
 	char t[1001];
@@ -133,10 +110,11 @@ transport check_transport(char *id)
 	while (row1 = mysql_fetch_row(res2))
 	{
 		route_id = row1[0];
+		
 	}
+	
 	t[1001] = '\0';
 	res2 = '\0';
-
 	snprintf(t, sizeof(t), "select config_key,config_value from transport_config where route_id=%s", route_id);
 	if (mysql_query(con, t))
 	{
@@ -155,10 +133,14 @@ transport check_transport(char *id)
 	return data;
 }
 
+/*child thread starts*/
+
 void *child_thread(char *id)
 {
+	
 	printf("Child thread started to process the received BMD request\n");
-
+	char* jsonfile;
+	char* csvfile;
 	char p[1001];
 	snprintf(p, sizeof(p), "update esb_request set status='Taken',processing_attempts=processing_attempts+1 where id=%s", id);
 
@@ -176,37 +158,73 @@ void *child_thread(char *id)
 	char *payload=get_element_text("//Payload", BMD);
 	char *Source =get_element_text("//Sender", BMD);
 	
-	char *transform_key = check_transform(id); /*this function returns the "JSON" or"CSV" or"XML" string as transform_key which extracted 												   from the transform_config table for the perticular sender,dest,msg_type.
-											   look at line no 26. 	*/												
+	char *transform_key = check_transform(id); //look at line no 9.												
+	
 	/* transformation process*/
+	
 	if (strcmp(transform_key, "JSON") == 0)  //comparing to json.
 	{ 
-		printf("transforming to JSON\n");
-		char* jsonfile=transform_to_json(Source,payload);
+		printf("Transforming to JSON\n");
+		 jsonfile=transform_to_json(Source,payload);
+		 	if(jsonfile=='\0')
+		 	{
+		 		printf("Unable to transform\n");
+		 	}		 		 
+	}
+	else
+	{
+		printf("Unable to compare with JSON\n");
 	}
 	if (strcmp(transform_key, "CSV") == 0)    //comparing for CSV.
 	{
-		printf("transforming to CSV\n");
-		char* csvfile = transform_to_csv(Source,payload);
+		printf("Transforming to CSV\n");
+		 csvfile = transform_to_csv(Source,payload);
+		 if(csvfile=='\0')
+		 	{
+		 	  printf("Unable to transform\n");
+		 	}
+	}
+	else
+	{
+		printf("Unable to compare with CSV\n");
 	}
 	if (strcmp(transform_key, "XML") == 0)
 	{
-		printf("No transformation needed\n");
+		printf("No Transformation Needed\n");
 		
 	}
 	/*transport process*/
-	transport t = check_transport(id); /*this function returns the structure that includes transport_key i.e "HTTP" or 											"SMTP",tansport_value which is extracted from the transport_config table for the perticular 										sender,dest,msg_type.look at line no 67.*/
-	if (strcmp(t.transport_key, "SMTP"))
+	
+	transport t = check_transport(id); //look at line no 72.
+	
+	//via email tranfport
+	
+	if (strcmp(t.transport_key, "SMTP")==0)
 	{
 		printf("transporting via SMTP\n");
-		//put function call for transport via SMTP here;
+			
+		if(send_mail(t.transport_value,jsonfile)) //sending the converted jsonfile via email.
+		{
+			printf("[-]Error in send_mail\n");
+			exit(1);
+		}
+		
 	}
-	if (strcmp(t.transport_key, "HTTP"))
-	{
+	
+	//via email tranfport
+	
+    if (strcmp(t.transport_key, "HTTP")==0)
+	{	
 		printf("transporting via HTTP\n");
 		//put function call for transport via HTTP here;
 	}
+	
+	/*status Done*/
+	status_done(id);
+	
 }
+
+/*polling request starts here*/
 
 void start_esb_request_poller_thread()
 {
@@ -214,7 +232,7 @@ void start_esb_request_poller_thread()
 	
 	while (true)
 	{
-		if ((mysql_query(con, "select *from esb_request where (status = 'Available' && processing_attempts <5) limit 4 ")))
+		if ((mysql_query(con, "select *from esb_request where (status = 'Available' && processing_attempts <5) limit 1 ")))
 		{
 			fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
 			exit(1);
@@ -249,13 +267,15 @@ void start_esb_request_poller_thread()
 		}
 		else
 		{
-			printf("\n****************** No Request Available in esb_request.*******************\n");
+			printf("\n------| No Request Available in esb_request.|------\n");
 		}
 
 		printf("\n");
 		sleep(5);
 	}
 }
+
+/*main starts here*/
 
 int main(int argc, char *argv[])
 {
