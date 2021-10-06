@@ -35,7 +35,7 @@ char *write_file(int sockfd)
         bzero(buffer, SIZE);
     }
     fclose(fp);
-    printf("File received at ftp server");
+    printf("File received at ftp server\n");
     return "0";
 }
 

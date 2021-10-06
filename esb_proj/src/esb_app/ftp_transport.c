@@ -27,7 +27,7 @@ void send_file(FILE *fp, int sockfd)
     }
 }
 
-int ftp(char *filename)
+int ftp(char *filename, char *serverAddr)
 {
     struct sockaddr_in addr, cl_addr;
     int sockfd, ret;
@@ -36,7 +36,7 @@ int ftp(char *filename)
     char *serverAddr;
     FILE *fp;
 
-    serverAddr = "127.0.0.1";
+    //serverAddr = "127.0.0.1";
 
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
     if (sockfd < 0)
