@@ -3,8 +3,8 @@
 ./threads
 */
 
-#include"threads.h"
-#include"status.h"
+#include "threads.h"
+#include "status.h"
 static char *unix_socket = NULL;
 unsigned int port = 3306; // mysql-server port number
 unsigned int flag = 0;
@@ -110,9 +110,8 @@ transport check_transport(char *id)
 	while (row1 = mysql_fetch_row(res2))
 	{
 		route_id = row1[0];
-		
 	}
-	
+
 	t[1001] = '\0';
 	res2 = '\0';
 	snprintf(t, sizeof(t), "select config_key,config_value from transport_config where route_id=%s", route_id);
@@ -137,10 +136,10 @@ transport check_transport(char *id)
 
 void *child_thread(char *id)
 {
-	
+
 	printf("Child thread started to process the received BMD request\n");
-	char* jsonfile;
-	char* csvfile;
+	char *jsonfile;
+	char *csvfile;
 	char p[1001];
 	snprintf(p, sizeof(p), "update esb_request set status='Taken',processing_attempts=processing_attempts+1 where id=%s", id);
 
@@ -153,36 +152,36 @@ void *child_thread(char *id)
 	printf("\n************** Status Updated Sucessfully at id=%s ****************\n\n", id);
 
 	p[1001] = '\0';
-	
+
 	xmlDocPtr BMD = load_xml_doc("BMD.xml");
-	char *payload=get_element_text("//Payload", BMD);
-	char *Source =get_element_text("//Sender", BMD);
-	
-	char *transform_key = check_transform(id); //look at line no 9.												
-	
+	char *payload = get_element_text("//Payload", BMD);
+	char *Source = get_element_text("//Sender", BMD);
+
+	char *transform_key = check_transform(id); //look at line no 9.
+
 	/* transformation process*/
-	
-	if (strcmp(transform_key, "JSON") == 0)  //comparing to json.
-	{ 
+
+	if (strcmp(transform_key, "JSON") == 0) //comparing to json.
+	{
 		printf("Transforming to JSON\n");
-		 jsonfile=transform_to_json(Source,payload);
-		 	if(jsonfile=='\0')
-		 	{
-		 		printf("Unable to transform\n");
-		 	}		 		 
+		jsonfile = transform_to_json(Source, payload);
+		if (jsonfile == '\0')
+		{
+			printf("Unable to transform\n");
+		}
 	}
 	else
 	{
 		printf("Unable to compare with JSON\n");
 	}
-	if (strcmp(transform_key, "CSV") == 0)    //comparing for CSV.
+	if (strcmp(transform_key, "CSV") == 0) //comparing for CSV.
 	{
 		printf("Transforming to CSV\n");
-		 csvfile = transform_to_csv(Source,payload);
-		 if(csvfile=='\0')
-		 	{
-		 	  printf("Unable to transform\n");
-		 	}
+		csvfile = transform_to_csv(Source, payload);
+		if (csvfile == '\0')
+		{
+			printf("Unable to transform\n");
+		}
 	}
 	else
 	{
@@ -191,37 +190,34 @@ void *child_thread(char *id)
 	if (strcmp(transform_key, "XML") == 0)
 	{
 		printf("No Transformation Needed\n");
-		
 	}
 	/*transport process*/
-	
+
 	transport t = check_transport(id); //look at line no 72.
-	
+
 	//via email tranfport
-	
-	if (strcmp(t.transport_key, "SMTP")==0)
+
+	if (strcmp(t.transport_key, "SMTP") == 0)
 	{
 		printf("transporting via SMTP\n");
-			
-		if(send_mail(t.transport_value,jsonfile)) //sending the converted jsonfile via email.
+
+		if (send_mail(t.transport_value, jsonfile)) //sending the converted jsonfile via email.
 		{
 			printf("[-]Error in send_mail\n");
 			exit(1);
 		}
-		
 	}
-	
+
 	//via email tranfport
-	
-    if (strcmp(t.transport_key, "HTTP")==0)
-	{	
+
+	if (strcmp(t.transport_key, "HTTP") == 0)
+	{
 		printf("transporting via HTTP\n");
 		//put function call for transport via HTTP here;
 	}
-	
+
 	/*status Done*/
 	status_done(id);
-	
 }
 
 /*polling request starts here*/
@@ -229,7 +225,7 @@ void *child_thread(char *id)
 void start_esb_request_poller_thread()
 {
 	pthread_t childthread;
-	
+
 	while (true)
 	{
 		if ((mysql_query(con, "select *from esb_request where (status = 'Available' && processing_attempts <5) limit 1 ")))
@@ -254,7 +250,6 @@ void start_esb_request_poller_thread()
 				}
 			}
 		}
-
 
 		if (status != '\0')
 		{
@@ -291,7 +286,7 @@ int main(int argc, char *argv[])
 	}
 
 	printf("Connected to mysql-server\n");
-	if (pthread_create(&mainthread, NULL, &start_esb_request_poller_thread, NULL))  //mainthread created to poll requests.
+	if (pthread_create(&mainthread, NULL, &start_esb_request_poller_thread, NULL)) //mainthread created to poll requests.
 	{
 		printf("unable to create the thread\n");
 	}

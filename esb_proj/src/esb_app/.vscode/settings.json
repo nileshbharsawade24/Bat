@@ -1,6 +1,7 @@
 {
     "files.associations": {
         "parser.h": "c",
-        "xpath.h": "c"
+        "xpath.h": "c",
+        "json.h": "c"
     }
 }
