@@ -17,11 +17,11 @@ char *write_file(int sockfd)
     int n;
     FILE *fp;
     char buffer[SIZE];
-
+	int i=0;
     //Create unique filename
-    char filename[] = "fileXXXXXX";
-    mkstemp(filename);
-    char *file = filename;
+    char filename[50];
+    //char *file = filename;
+    snprintf(filename, sizeof(filename), "output_%d.xml", i++);
     fp = fopen(filename, "w"); //open that file
     while (1)
     {

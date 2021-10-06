@@ -17,7 +17,10 @@ MYSQL_ROW row, row1;
 char *status, *sender, *dest, *msg_type;
 char *id, *route_id;
 int attempts;
-
+void start_esb_request_poller_thread();
+void *child_thread(char *id);
+//transport check_transport(char *id);
+char *check_transform(char *id);
 typedef struct
 {
 	char *transport_key;

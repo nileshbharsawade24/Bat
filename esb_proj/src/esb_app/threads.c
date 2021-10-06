@@ -1,10 +1,12 @@
-/*gcc -o threads threads.c mysqlconnect.h xml_parsing.c transform.c smtp.c status.c -lpthread -lcurl $(mysql_config --cflags --libs) $(xml2-config --cflags --libs)
+/*gcc -o threads threads.c mysqlconnect.h xml_parsing.c transform.c smtp.c status.c Authentication.c http_Transport.c ftp_transport.c -lpthread -lcurl $(mysql_config --cflags --libs) $(xml2-config --cflags --libs)
 
 ./threads
 */
 
 #include "threads.h"
 #include "status.h"
+#include "http_transport.h"
+#include "ftp_transport.h"
 static char *unix_socket = NULL;
 unsigned int port = 3306; // mysql-server port number
 unsigned int flag = 0;
@@ -140,6 +142,7 @@ void *child_thread(char *id)
 	printf("Child thread started to process the received BMD request\n");
 	char *jsonfile;
 	char *csvfile;
+	char *xmlfile;
 	char p[1001];
 	snprintf(p, sizeof(p), "update esb_request set status='Taken',processing_attempts=processing_attempts+1 where id=%s", id);
 
@@ -149,7 +152,7 @@ void *child_thread(char *id)
 		exit(1);
 	}
 
-	printf("\n************** Status Updated Sucessfully at id=%s ****************\n\n", id);
+	printf("\n++++|Status Updated Sucessfully at id=\"%s\" |++++\n\n", id);
 
 	p[1001] = '\0';
 
@@ -163,39 +166,42 @@ void *child_thread(char *id)
 
 	if (strcmp(transform_key, "JSON") == 0) //comparing to json.
 	{
-		printf("Transforming to JSON\n");
+		printf("Transforming to JSON format..\n");
 		jsonfile = transform_to_json(Source, payload);
 		if (jsonfile == '\0')
 		{
 			printf("Unable to transform\n");
+			exit(1);
 		}
 	}
-	else
-	{
-		printf("Unable to compare with JSON\n");
-	}
+	
 	if (strcmp(transform_key, "CSV") == 0) //comparing for CSV.
 	{
-		printf("Transforming to CSV\n");
+		printf("Transforming to CSV format..\n");
 		csvfile = transform_to_csv(Source, payload);
 		if (csvfile == '\0')
 		{
 			printf("Unable to transform\n");
+			exit(1);
 		}
 	}
-	else
+	
+	if (strcmp(transform_key, "XML") == 0)//comparing for xml
 	{
-		printf("Unable to compare with CSV\n");
-	}
-	if (strcmp(transform_key, "XML") == 0)
-	{
-		printf("No Transformation Needed\n");
+		printf("No transformation Needed\n");
+		xmlfile = transform_to_xml(Source, payload);
+		if (xmlfile == '\0')
+		{
+			printf("Unable to transform\n");
+			exit(1);
+		}
+		
 	}
 	/*transport process*/
 
 	transport t = check_transport(id); //look at line no 72.
 
-	//via email tranfport
+	//via email transport
 
 	if (strcmp(t.transport_key, "SMTP") == 0)
 	{
@@ -208,14 +214,28 @@ void *child_thread(char *id)
 		}
 	}
 
-	//via email tranfport
+	//via HTTP transport
 
 	if (strcmp(t.transport_key, "HTTP") == 0)
 	{
 		printf("transporting via HTTP\n");
-		//put function call for transport via HTTP here;
+		if (!(http(t.transport_value, csvfile)))//put function call for transport via HTTP here;
+		{
+			printf("[-]Error in sending via http\n");
+			exit(1);
+		}
 	}
-
+	//via SFTP transport
+	
+	if (strcmp(t.transport_key, "SFTP") == 0)
+	{
+		printf("transporting via SFTP\n");
+		if (ftp(t.transport_value, xmlfile))//put function call for transport via HTTP here;
+		{
+			printf("[-]Error in sending via SFTP\n");
+			exit(1);
+		}
+	}
 	/*status Done*/
 	status_done(id);
 }
@@ -262,7 +282,7 @@ void start_esb_request_poller_thread()
 		}
 		else
 		{
-			printf("\n------| No Request Available in esb_request.|------\n");
+			printf("\n++++| No Request Available in esb_request.|++++\n");
 		}
 
 		printf("\n");

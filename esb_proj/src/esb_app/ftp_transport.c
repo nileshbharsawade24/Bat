@@ -27,13 +27,13 @@ void send_file(FILE *fp, int sockfd)
     }
 }
 
-int ftp(char *filename, char *serverAddr)
+int ftp(char *serverAddr,char *filename)
 {
     struct sockaddr_in addr, cl_addr;
     int sockfd, ret;
     char buffer[BUF_SIZE];
     struct hostent *server;
-    char *serverAddr;
+    //char *serverAddr;
     FILE *fp;
 
     //serverAddr = "127.0.0.1";
@@ -77,8 +77,7 @@ int ftp(char *filename, char *serverAddr)
 
     return 0;
 }
-
-// int main(int argc, char **argv)
-// {
-//     ftp("file");
-// }
+ /*int main(int argc, char **argv)
+ {
+     ftp("BMD.xml","127.0.0.1");
+ }*/

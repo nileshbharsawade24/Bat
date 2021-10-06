@@ -39,7 +39,7 @@ int http(char *http_url, char *filename)
     curl = curl_easy_init();
     if (curl)
     {
-        printf("String: %s \ndone\n", string);
+        //printf("\nString: %s \ndone\n", string);
         curl_easy_setopt(curl, CURLOPT_URL, http_url);      //server's url
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, string); //post the file data
         res = curl_easy_perform(curl);
@@ -51,7 +51,7 @@ int http(char *http_url, char *filename)
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
             if (response_code >= 200 && response_code <= 299 && response_code != CURLE_ABORTED_BY_CALLBACK)
             {
-                printf("request succesfully sent with response Code %ld\n", response_code);
+                printf("\nrequest succesfully sent with response Code %ld\n", response_code);
                 status = 1;
             }
         }
@@ -68,10 +68,11 @@ int http(char *http_url, char *filename)
     return status;
 }
 
-void main()
+/*void main()
 {
-    //char* url="https://reqbin.com/echo/post/json";
-    char *url = "https://getpantry.cloud/apiv1/pantry/5593b275-131d-46e5-800a-016b65c587b1/basket/testBasket";
-    char *filename = "1.json";
+    char* url="https://reqbin.com/echo/post/json";
+    //char* url="https://httpbin.org/anything";
+    //char *url = "https://getpantry.cloud/apiv1/pantry/5593b275-131d-46e5-800a-016b65c587b1/basket/testBasket";
+    char *filename = "BMD.xml";
     http(url, filename); //call http function
-}
+  }*/
