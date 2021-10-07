@@ -23,9 +23,14 @@
 ## HTTP api to test http_transport() external api (Reference)
     * https://github.com/public-apis/public-apis
 
+### Database file:
 
+* you can find the SQL file here : "esb_proj/db.sql"  
 
 ## Running ESB_TCP
+
+* Compiling threads.c file to test the thread api:
+  * gcc -o threads threads.c mysqlconnect.h xml_parsing.c transform.c smtp.c status.c Authentication.c http_Transport.c ftp_transport.c -lpthread -lcurl $(mysql_config --cflags --libs) $(xml2-config --cflags --libs)
 
 * Server
     * Go inside this path mentioned " esb_proj/src/esb_app/ " You will find "run_server.sh" file.
