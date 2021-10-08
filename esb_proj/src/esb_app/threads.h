@@ -3,7 +3,7 @@
 #include <mysql/mysql.h>
 #include <string.h>
 #include <pthread.h>
-#include "mysqlconnect.h"
+// #include "mysqlconnect.h"
 #include "xml_parsing.h"
 #include "transform.h"
 #include <curl/curl.h>
@@ -18,7 +18,7 @@ char *status, *sender, *dest, *msg_type;
 char *id, *route_id;
 int attempts;
 void start_esb_request_poller_thread();
-void *child_thread(char *id);
+void *child_thread(void *id);
 //transport check_transport(char *id);
 char *check_transform(char *id);
 typedef struct

@@ -5,11 +5,13 @@
 
 #include "threads.h"
 #include "status.h"
+#include <unistd.h>
 #include "http_transport.h"
 #include "ftp_transport.h"
-static char *unix_socket = NULL;
-unsigned int port = 3306; // mysql-server port number
-unsigned int flag = 0;
+
+// static char *unix_socket = NULL;
+//unsigned int port = 3306; // mysql-server port number
+//unsigned int flag = 0;
 
 /*below check_transform() function returns the "JSON" or"CSV" or"XML" string as transform_key which extracted from the transform_config table for the perticular sender,dest,msg_type.*/
 
@@ -136,9 +138,9 @@ transport check_transport(char *id)
 
 /*child thread starts*/
 
-void *child_thread(char *id)
+void *child_thread(void *fid)
 {
-
+	char *id=(char*)fid;
 	printf("Child thread started to process the received BMD request\n");
 	char *jsonfile;
 	char *csvfile;
@@ -168,34 +170,34 @@ void *child_thread(char *id)
 	{
 		printf("Transforming to JSON format..\n");
 		jsonfile = transform_to_json(Source, payload);
-		if (jsonfile == '\0')
+		if (jsonfile == NULL)
 		{
 			printf("Unable to transform\n");
 			exit(1);
 		}
 	}
-	
+
 	if (strcmp(transform_key, "CSV") == 0) //comparing for CSV.
 	{
 		printf("Transforming to CSV format..\n");
 		csvfile = transform_to_csv(Source, payload);
-		if (csvfile == '\0')
+		if (csvfile == NULL)
 		{
 			printf("Unable to transform\n");
 			exit(1);
 		}
 	}
-	
+
 	if (strcmp(transform_key, "XML") == 0)//comparing for xml
 	{
 		printf("No transformation Needed\n");
 		xmlfile = transform_to_xml(Source, payload);
-		if (xmlfile == '\0')
+		if (xmlfile == NULL)
 		{
 			printf("Unable to transform\n");
 			exit(1);
 		}
-		
+
 	}
 	/*transport process*/
 
@@ -226,16 +228,16 @@ void *child_thread(char *id)
 		}
 	}
 	//via SFTP transport
-	
-	if (strcmp(t.transport_key, "SFTP") == 0)
-	{
-		printf("transporting via SFTP\n");
-		if (ftp(t.transport_value, xmlfile))//put function call for transport via HTTP here;
-		{
-			printf("[-]Error in sending via SFTP\n");
-			exit(1);
-		}
-	}
+
+	// if (strcmp(t.transport_key, "SFTP") == 0)
+	// {
+	// 	printf("transporting via SFTP\n");
+	// 	if (ftp(t.transport_value, xmlfile))//put function call for transport via HTTP here;
+	// 	{
+	// 		printf("[-]Error in sending via SFTP\n");
+	// 		exit(1);
+	// 	}
+	// }
 	/*status Done*/
 	status_done(id);
 }
@@ -244,6 +246,10 @@ void *child_thread(char *id)
 
 void start_esb_request_poller_thread()
 {
+	con = connect_mysql();
+
+	printf("Connected to mysql-server\n");
+
 	pthread_t childthread;
 
 	while (true)
@@ -266,12 +272,12 @@ void start_esb_request_poller_thread()
 				{
 					id = row[0];
 					status = row[8];
-					attempts = row[10];
+					attempts = atoi(row[10]);
 				}
 			}
 		}
 
-		if (status != '\0')
+		if (status != NULL)
 		{
 			printf("\nReceived New BMD request, Ready to process the BMD.\n");
 			if (pthread_create(&childthread, NULL, &child_thread, id))
@@ -288,30 +294,7 @@ void start_esb_request_poller_thread()
 		printf("\n");
 		sleep(5);
 	}
-}
-
-/*main starts here*/
-
-int main(int argc, char *argv[])
-{
-
-	pthread_t mainthread;
-
-	con = mysql_init(NULL); // this fun initalizes the headerfiles i.e mysql.h
-
-	if (!(mysql_real_connect(con, host, user, pass, dbname, port, unix_socket, flag))) //this is the real fun which connects to 																						  mysql-server.
-	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
-	}
-
-	printf("Connected to mysql-server\n");
-	if (pthread_create(&mainthread, NULL, &start_esb_request_poller_thread, NULL)) //mainthread created to poll requests.
-	{
-		printf("unable to create the thread\n");
-	}
-	pthread_join(&mainthread, NULL);
 
 	mysql_close(con);
-	return 0;
+
 }

@@ -2,25 +2,25 @@
 #include <stdlib.h>
 #include <mysql/mysql.h>
 #include <string.h>
-static char *host = "localhost"; // MySQL required variables
-static char *user = "root";
-static char *pass = "Prideoflion@01";
-static char *dbname = "pavan";
+#include <unistd.h>
+#include "mysqlconnect.h"
 
-unsigned int port = 3306; // active port in which mysql is running.
-static char *unix_socket = NULL;
-unsigned int flag = 0; //it behaves like ODBC connection.
+#define MAX_RETRY_FOR_GETTING_MYSQL_CONNECTION 5
+#define host "localhost"
+#define user "test_user"
+#define pass "test_password"
+#define dbname "BAT_DB"
 
-//struct for input message body and metadata
-typedef struct
-{
-	char *MessageID;
-	char *Sender;
-	char *Destination;
-	char *MessageType;
-	char *Payload;
-	char *ReferenceID;
-} message_data;
+// //struct for input message body and metadata
+// typedef struct
+// {
+// 	char *MessageID;
+// 	char *Sender;
+// 	char *Destination;
+// 	char *MessageType;
+// 	char *Payload;
+// 	char *ReferenceID;
+// } message_data;
 
 /* fuction to insert the data to mysql*/
 
@@ -62,21 +62,27 @@ void insert(MYSQL *con, message_data *msg, char *filename)
 // establish connection with returning MYSQL Type(Struct)
 MYSQL *connect_mysql()
 {
-	MYSQL *con;
-
-	//char *temp,*temp2,*temp3;
-
-	con = mysql_init(NULL); // this fun initalizes the headerfiles i.e mysql.h
-
-	if (!(mysql_real_connect(con, host, user, pass, dbname, port, unix_socket, flag))) //this is the real fun which connects to mysql-server.
-	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
-	}
-
-	printf("Connected to mysql-server\n");
-	printf("\n");
-	return con;
+  MYSQL *connection = mysql_init(NULL);
+  if (connection == NULL)
+  {
+      fprintf(stderr, "%s\n", mysql_error(connection));
+      exit(1);
+  }
+  for(int i=0;i<MAX_RETRY_FOR_GETTING_MYSQL_CONNECTION;i++){
+    if(mysql_real_connect(connection, host, user, pass,
+            dbname, 0, NULL, 0)!=NULL){
+      break;
+    }
+    else if(i+1==MAX_RETRY_FOR_GETTING_MYSQL_CONNECTION){
+      fprintf(stderr, "ERROR : You are not getting MySQL connection even after trying for %d times.\n",
+              MAX_RETRY_FOR_GETTING_MYSQL_CONNECTION);
+      break;
+    }
+    else{
+      sleep(1);
+    }
+  }
+  return connection;
 }
 
 /*validation of BMD*/
@@ -93,7 +99,7 @@ void validation(MYSQL *con, message_data *msg, char *file)
 	}
 	//printf("yes=:%s\n",file);
 	res = mysql_store_result(con);
-
+	int flag=0;
 	while (row = mysql_fetch_row(res)) // this is used to fetch each column.
 	{
 

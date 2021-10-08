@@ -6,6 +6,7 @@
 #include "netinet/in.h"
 #include "netdb.h"
 #include <unistd.h>
+#include <netinet/in.h>
 
 #define PORT 4445
 #define BUF_SIZE 2000

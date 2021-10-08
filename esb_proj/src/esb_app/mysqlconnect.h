@@ -1,14 +1,14 @@
-#pragma once
-
-#include <stdio.h>
-#include <stdlib.h>
+// #pragma once
+// #ifndef HEADER_FILE
+// #define HEADER_FILE
+// #include <stdio.h>
+// #include <stdlib.h>
 #include <mysql/mysql.h>
-#include <string.h>
-static char *host = "localhost";
-static char *user = "root";
-static char *pass = "Prideoflion@01";
-static char *dbname = "pavan";
+// #include <string.h>
 
+// unsigned int port = 3306; // active port in which mysql is running.
+// static char *unix_socket = NULL;
+// unsigned int flag = 0; //it behaves like ODBC connection.
 typedef struct
 {
     char *MessageID;
@@ -22,3 +22,4 @@ typedef struct
 void insert(MYSQL *con, message_data *msg, char *filename);
 void validation(MYSQL *con, message_data *msg, char *file);
 MYSQL *connect_mysql();
+// #endif

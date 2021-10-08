@@ -1,42 +1,47 @@
 # Bat
 
-## XML External Libraries Enviroment Setup
-    * Enviroment requirement specific commands for debian Linux
-        * sudo apt-get install libxml2-dev libxslt1-dev
-    * Enviroment requirement specific commands for Redhat/Centos/Fedora Distro
-        * yum install libxml-devel
+# Installation required
+    sudo apt update
+    sudo apt install mysql-server
+    sudo apt install libmysqlclient-dev
+    sudo apt install libxml2-dev
+    sudo apt install libcurl4-openssl-dev
 
-## SQL External Libraries Enviroment Setup (On preinstalled MYSQL Client)
-    * Enviroment requirement specific commands for debian Linux
-        * apt-get install libmysqlclient-dev 
-    * Enviroment requirement specific commands for Redhat/Centos/Fedora Distro
-        * yum install mysql-devel -y
-  
-## JSON External Libraries Enviroment Setup
-    * Enviroment requirement specific commands for debian Linux
-        * sudo apt install libjson-c-dev
-
-##  CURL External Libraries Enviroment Setup
-    * Enviroment requirement specific commands for debian Linux
-        * sudo apt-get install libcurl4-openssl-dev
+Also make sure in your mysql server, there is a user with  name *test_user*, password *test_password* and have all access grant on *BAT_DB* database. One can do this with following steps:<br />
+1. Open mysql promt with sudo privilege
+    ```
+    sudo mysql
+    ```
+2. Create a user *test_user* with password *test_password*
+    ```
+    CREATE USER 'test_user' IDENTIFIED BY 'test_password';
+    ```
+3. Create a database *BAT_DB*
+    ```
+    create database BAT_DB
+    ```
+4. Grant all access on *BAT_DB* database to user *test_user*
+    ```
+    GRANT ALL ON BAT_DB.* TO 'test_user';
+    ```
 
 ## HTTP api to test http_transport() external api (Reference)
     * https://github.com/public-apis/public-apis
 
 ### Database file:
-
-* you can find the SQL file here : "esb_proj/db.sql"  
+* you can find the SQL dump file here : "esb_proj/db.sql" . Dump that using below command :
+`mysql -u test_user -p BAT_DB < db.sql`
 
 ## Running ESB_TCP
-
-* Compiling threads.c file to test the thread api:
-  * run : <span style="background-color: #F0D3C7">gcc -o threads threads.c mysqlconnect.h xml_parsing.c transform.c smtp.c status.c Authentication.c http_Transport.c ftp_transport.c -lpthread -lcurl $(mysql_config --cflags --libs) $(xml2-config --cflags --libs)</span>
-
 * Server
-    * Go inside this path mentioned " esb_proj/src/esb_app/ " You will find "run_server.sh" file.
-    * run "./run_server.sh" to compile and create executable file on server side. if something error rised like permission denied, run "chmod +x run_server.sh" after debugging the error run above mentioned again.
+    * Go inside this path mentioned " esb_proj/src/esb_app/ " Run server using below commands :<br/>
+    ```
+      make server  
+      ./server
+    ```
 
-        
+
+
 * Client
-    * Go inside this path mentioned " esb_proj/test/Client/ "You will find "run_client.sh" file. 
+    * Go inside this path mentioned " esb_proj/test/Client/ "You will find "run_client.sh" file.
     * run "./run_client.sh" to compile and create executable file on server side. if something error rised like permission denied, run "chmod +x run_client.sh" after debugging the error run above mentioned again.
