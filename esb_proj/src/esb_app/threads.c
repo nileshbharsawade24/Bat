@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "http_transport.h"
 #include "ftp_transport.h"
-
+#define NUM_THREADS 5
 // static char *unix_socket = NULL;
 //unsigned int port = 3306; // mysql-server port number
 //unsigned int flag = 0;
@@ -250,8 +250,8 @@ void start_esb_request_poller_thread()
 
 	printf("Connected to mysql-server\n");
 
-	pthread_t childthread;
-
+	pthread_t childthread[NUM_THREADS];
+	unsigned int count=0;
 	while (true)
 	{
 		if ((mysql_query(con, "select *from esb_request where (status = 'Available' && processing_attempts <5) limit 1 ")))
@@ -280,7 +280,7 @@ void start_esb_request_poller_thread()
 		if (status != NULL)
 		{
 			printf("\nReceived New BMD request, Ready to process the BMD.\n");
-			if (pthread_create(&childthread, NULL, &child_thread, id))
+			if (pthread_create(&childthread[count%NUM_THREADS], NULL, &child_thread, id))
 			{
 				printf("unable to create the Childthread\n");
 			}
@@ -293,6 +293,7 @@ void start_esb_request_poller_thread()
 
 		printf("\n");
 		sleep(5);
+		count++;
 	}
 
 	mysql_close(con);

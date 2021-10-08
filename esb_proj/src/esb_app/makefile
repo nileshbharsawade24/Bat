@@ -5,7 +5,7 @@ Employer : Broadridge\
 Description : This is makefile with two main target `all` and `setup` with `clean`.\
 #
 headers=-I/usr/include/mysql/ -I/usr/include/libxml2/
-libraries=-lxml2 -lcurl `mysql_config --libs`
+libraries=-lxml2 -lcurl -lpthread `mysql_config --libs`
 OBJ= handle_request.o server.o threads.o transform.o smtp.o status.o http_Transport.o  xml_parsing.o mysqlconnect.o  Authentication.o
 # all:$(OBJ)
 # 	gcc -o handle_request $(OBJ) $(libraries)
@@ -47,7 +47,7 @@ http_Transport.o: http_Transport.c
 
 
 handle_request.o: handle_request.c
-	gcc -c $(headers) handle_request.c
+	gcc -c $(headers) handle_request.c $(libraries)
 xml_parsing.o: xml_parsing.c
 	gcc -c $(headers) xml_parsing.c
 mysqlconnect.o: mysqlconnect.c
@@ -60,4 +60,4 @@ Authentication.o: Authentication.c
 # 	gcc $(headers) -o setup database_handler/setup.c $(libraries)
 
 clean:
-	rm *.o server *.csv *.json
+	rm *.o server *.csv *.json file*

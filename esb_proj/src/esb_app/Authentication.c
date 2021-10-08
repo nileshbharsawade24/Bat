@@ -1,24 +1,17 @@
-/*command to run 
+/*command to run
 gcc -o aut Authentication.c $(mysql_config --cflags --libs)
 run ./aut
 */
+#include "mysqlconnect.h"
 #include "Authentication.h"
 
 void Authentication(char *sign)
 {
-	MYSQL *con;
+	MYSQL *con=connect_mysql();
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char *temp;
 	//char *temp,*temp2,*temp3;
-
-	con = mysql_init(NULL); // this fun initalizes the headerfiles i.e mysql.h
-
-	if (!(mysql_real_connect(con, host, user, pass, dbname, port1, unix_socket1, flag1))) //this is the real fun which connects to mysql-server.
-	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
-	}
 
 	printf("Connected to mysql-server\n");
 	printf("\n");

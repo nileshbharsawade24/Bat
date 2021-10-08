@@ -18,7 +18,8 @@ int main(int argc, char const *argv[]) {
   }
   //fork will positive pid to parent process
   else{
-    start_esb_request_poller_thread();//parent will do polling and assigning task to threads
+    while(1){sleep(100);};
+    // start_esb_request_poller_thread();//parent will do polling and assigning task to threads
   }
   return 0;
 }
