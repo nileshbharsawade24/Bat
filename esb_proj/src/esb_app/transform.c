@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 int i = 0;
 /*transforming to json*/
 
@@ -18,7 +20,7 @@ char *transform_to_json(char *source, char *payload)
   FILE *fp = fopen(filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
-  char *file = filename;
+ // char *file = filename;
   return file;
 }
 
@@ -39,7 +41,7 @@ char *transform_to_csv(char *source, char *payload)
   FILE *fp = fopen(filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
-  char *file = filename;
+ // char *file = filename;
   return file;
 }
 
@@ -51,7 +53,7 @@ char * transform_to_html(char *source, char *payload){
   char filename[20];
   char *file = malloc(20);
   strcpy(file,filename);
-  sprintf(filename,sizeof(filename), "output_%d.html",i);
+  sprintf(filename, (const char*)sizeof(filename), "output_%d.html",i);
 
   FILE *fp= fopen(filename,"w");
     fprintf(fp,"<!DOCTYPE html>");
@@ -100,6 +102,6 @@ char *transform_to_xml(char *source, char *payload)
   FILE *fp = fopen(filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
-  char *file = filename;
+ // char *file = filename;
   return file;
 }
