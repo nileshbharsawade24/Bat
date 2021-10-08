@@ -7,8 +7,8 @@
 #include <string.h>
 #include <curl/curl.h>
 #include "smtp.h"
-#define FROM_ADDR "<esb.proj2021.bat@gmail.com>"
-#define CC_ADDR "<pavankolur121@gmail.com>"
+#define FROM_ADDR "<esbtest321@gmail.com>"
+#define CC_ADDR "<rohitbhamu6@gmail.com>"
 
 int send_mail(char *to, char *text)
 {
@@ -24,8 +24,8 @@ int send_mail(char *to, char *text)
   if (curl)
   {
     /* This is the URL for your mailserver */
-    curl_easy_setopt(curl, CURLOPT_USERNAME, "esb.proj2021.bat@gmail.com");
-    curl_easy_setopt(curl, CURLOPT_PASSWORD, "bat2021@esb"); //enter password
+    curl_easy_setopt(curl, CURLOPT_USERNAME, "esbtest321@gmail.com");
+    curl_easy_setopt(curl, CURLOPT_PASSWORD, "testesb@321"); //enter password
 
     curl_easy_setopt(curl, CURLOPT_URL, "smtp://smtp.gmail.com:587/");
     curl_easy_setopt(curl, CURLOPT_USE_SSL, CURLUSESSL_ALL);
@@ -59,9 +59,8 @@ int send_mail(char *to, char *text)
   printf("\n********| \"Mail sent successfully\" |********\n");
   return 0;
 }
-/*int main()
+int main()
 {
  // char *s = "HELL0";
-  int n=send_mail("pavankolur2000@gmail.com","/home/pavankolur/Bat/esb_proj/src/esb_app/output_1.json");
-  
-}*/
+  int n=send_mail("rohitbhamu6@gmail.com","/home/rohit/Bat/esb_proj/src/esb_app/output_1.json");
+}
