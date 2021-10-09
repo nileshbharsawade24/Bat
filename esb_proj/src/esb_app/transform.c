@@ -19,6 +19,7 @@ char *transform_to_json(char *source, char *payload)
   FILE *fp = fopen(filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
+ // char *file = filename;
   return file;
 }
 
