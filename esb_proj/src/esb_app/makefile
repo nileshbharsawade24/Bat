@@ -6,7 +6,7 @@ Description : This is makefile with two main target `all` and `setup` with `clea
 #
 headers=-I/usr/include/mysql/ -I/usr/include/libxml2/
 libraries=-lxml2 -lcurl -lpthread `mysql_config --libs`
-OBJ= handle_request.o server.o threads.o transform.o smtp.o status.o http_Transport.o  xml_parsing.o mysqlconnect.o  Authentication.o
+OBJ= handle_request.o server.o threads.o transform.o smtp.o status.o http_Transport.o ftp_transport.o  xml_parsing.o mysqlconnect.o  Authentication.o
 # all:$(OBJ)
 # 	gcc -o handle_request $(OBJ) $(libraries)
 # 	rm *.o
@@ -42,8 +42,8 @@ status.o : status.c
 http_Transport.o: http_Transport.c
 	gcc -c http_Transport.c
 
-# ftp_transport.o : ftp_transport.c
-# 	gcc -c ftp_transport.c
+ftp_transport.o : ftp_transport.c
+	gcc -c ftp_transport.c
 
 
 handle_request.o: handle_request.c

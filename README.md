@@ -18,7 +18,7 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
     ```
 3. Create a database *BAT_DB*
     ```
-    create database BAT_DB
+    create database BAT_DB;
     ```
 4. Grant all access on *BAT_DB* database to user *test_user*
     ```

@@ -2,8 +2,9 @@
 #include <libxml2/libxml/xpath.h>
 #include  <stdio.h>
 #include <stdlib.h>
-#include<string.h>
-#include "mysqlconnect.h"
+#include <string.h>
+#include "xml_parsing.h"
+// #include "mysqlconnect.h"
 
 // #include"mysqlconnect.h"
 void Authentication(char *sign);
@@ -67,34 +68,21 @@ xmlChar* get_element_text(char *node_xpath, xmlDocPtr doc) {
 }
 
 
-message_data* do_parse(char *file){
+bmd* do_parse(char *file){
 
-    char *docname = file;
     char *password="63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c";
     char *sender="756E2EAA-1D5B-4BC0-ACC4-4CEB669408DA";
-    xmlDocPtr doc = load_xml_doc(docname);
-    printf("MessageID = %s\n", get_element_text("//MessageID", doc));
-    printf("Sender = %s\n", get_element_text("//Sender", doc));
-    printf("Destination = %s\n", get_element_text("//Destination", doc));
-    printf("MessageType = %s\n", get_element_text("//MessageType", doc));
-    printf("Payload = %s\n", get_element_text("//Payload", doc));
-    printf("ReferenceID = %s\n", get_element_text("//ReferenceID", doc));
-    printf("Signature = %s\n\n", get_element_text("//Signature", doc));
-    printf("Parsing Done\n\n");
+    xmlDocPtr doc = load_xml_doc(file);
     /*Authentication of BMD*/
-    char *sign=get_element_text("//Signature", doc);
 
-    Authentication(sign);//function defination is in Authentication.c file
-     //xmlFreeDoc(doc);
-    //xmlFreeDoc(doc); //xmlCleanupParser(); //remove(file);
-    message_data *msg;
-    msg->Destination=get_element_text("//Destination", doc);
-    msg->MessageID=get_element_text("//MessageID", doc);
-    msg->MessageType=get_element_text("//MessageType", doc);
-    msg->Payload=get_element_text("//Payload", doc);
-    msg->Sender=get_element_text("//Sender", doc);
-    msg->ReferenceID=get_element_text("//ReferenceID", doc);
-
+    bmd *msg=malloc(sizeof(bmd));//Ihtout malloc : use of uninitialised value of size 8
+    msg->envelop.Destination=get_element_text("//Destination", doc);
+    msg->envelop.MessageID=get_element_text("//MessageID", doc);
+    msg->envelop.MessageType=get_element_text("//MessageType", doc);
+    msg->payload=get_element_text("//Payload", doc);
+    msg->envelop.Sender=get_element_text("//Sender", doc);
+    msg->envelop.ReferenceID=get_element_text("//ReferenceID", doc);
+    msg->envelop.Signature=get_element_text("//Signature", doc);
+    msg->envelop.CreationDateTime=get_element_text("//CreationDateTime", doc);
     return msg;
-
 }

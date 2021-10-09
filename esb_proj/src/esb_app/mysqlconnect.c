@@ -20,32 +20,31 @@
 // 	char *MessageType;
 // 	char *Payload;
 // 	char *ReferenceID;
-// } message_data;
+// } bmd;
 
 /* fuction to insert the data to mysql*/
 
-void insert(MYSQL *con, message_data *msg, char *filename)
+void insert(MYSQL *con, bmd *msg, char *filename)
 {
 
 	char *q = (char *)malloc(500); // memory allocation to string query which nis going to be concated tor insert query
 	q[0] = '\0';
 	strcat(q, "insert into esb_request(sender_id,dest_id, message_id, message_type,data_location,status,status_details,reference_id,received_on) values ('");
-	strcat(q, msg->Sender);
+	strcat(q, msg->envelop.Sender);
 	strcat(q, "', '");
-	strcat(q, msg->Destination);
+	strcat(q, msg->envelop.Destination);
 	strcat(q, "', '");
-	strcat(q, msg->MessageID);
+	strcat(q, msg->envelop.MessageID);
 	strcat(q, "', '");
-	strcat(q, msg->MessageType);
-	strcat(q, "', './");
-	//strcat(q, "./");
+	strcat(q, msg->envelop.MessageType);
+	strcat(q, "', '");
 	strcat(q, filename);
 	strcat(q, "', '");
 	strcat(q, "Available");
 	strcat(q, "', '");
 	strcat(q, "Yet to process");
 	strcat(q, "', '");
-	strcat(q, msg->ReferenceID);
+	strcat(q, msg->envelop.ReferenceID);
 	strcat(q, "', ");
 	strcat(q, "now()");
 	strcat(q, " )");
@@ -87,7 +86,7 @@ MYSQL *connect_mysql()
 
 /*validation of BMD*/
 
-void validation(MYSQL *con, message_data *msg, char *file)
+void validation(MYSQL *con, bmd *msg, char *file)
 {
 	MYSQL_RES *res;
 	MYSQL_ROW row;
@@ -103,15 +102,14 @@ void validation(MYSQL *con, message_data *msg, char *file)
 	while (row = mysql_fetch_row(res)) // this is used to fetch each column.
 	{
 
-		if ((strcmp(msg->Sender, row[1]) == 0) && (strcmp(msg->Destination, row[2]) == 0) && (strcmp(msg->MessageType, row[3]) == 0))
+		if ((strcmp(msg->envelop.Sender, row[1]) == 0) && (strcmp(msg->envelop.Destination, row[2]) == 0) && (strcmp(msg->envelop.MessageType, row[3]) == 0))
 		{
 			printf("[+] VALIDATION IS OK\n");
 			flag = 1;
 
 			insert(con, msg, file);
 
-			printf("Data inserted to esb_request table.\n");
-			printf("**************************************\n\n");
+			printf("[+] Data inserted to esb_request table.\n");
 			break;
 		}
 	}

@@ -8,7 +8,7 @@
 #include<unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#define PORT 4444
+#define PORT 4445
 #define BUF_SIZE 2000
 #define SIZE 1024
 

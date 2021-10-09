@@ -5,13 +5,14 @@
 #include "string.h"
 #include "netinet/in.h"
 #include <pthread.h>
-// #include "mysqlconnect.h"
+#include "mysqlconnect.h"
 #include "xml_parsing.h"
 #include <mysql/mysql.h>
 #include <unistd.h>
 #include "handle_request.h"
+#include "Authentication.h"
 
-#define PORT 4444
+#define PORT 4445
 #define BUF_SIZE 2000
 #define CLADDR_LEN 100
 #define SIZE 1024
@@ -23,10 +24,9 @@ char* write_file(int sockfd)
   FILE *fp;
   char buffer[SIZE];
   //Create unique filename
-  char filename[20] = "fileXXXXXX";
-  mkstemp(filename);
-  char *file = malloc(20);
-  strcpy(file,filename);
+  unsigned long tm=(unsigned long)time(NULL);
+	char *filename = malloc(50 * sizeof(char));
+	sprintf(filename, "./.tmp/BMD_%d_%lu.xml", sockfd, tm);
   fp = fopen(filename, "w"); //open that file
   while (1)
   {
@@ -40,38 +40,26 @@ char* write_file(int sockfd)
     bzero(buffer, SIZE);
   }
   fclose(fp);
-
-  return file;
+  return filename;
 }
 
-void* work(void * fd){
+void* serve(void * fd){
   int sockfd=*(int*)fd;
-  //using fork, creates its another copy i.e. creating a child process
-  printf("Child created\n");
-
-  //stop listening for new connections by the main process. the child will continue to listen.
-  //the main process now handles the connected client.
-
   char * filename = write_file(sockfd); //send to write the input file into directory and return that filename
-                                    // char *file=filename;
-  printf("Reading done..\n");
-  message_data *request_message; // struct pointer of message_data type
-
-  printf("Parsing the BMD file: %s\n\n", filename);
-  request_message = do_parse(filename); // parse that file into valid BMD format and return the BMD
   MYSQL *con = connect_mysql(); // establish connection between the MySql and server
-  printf("Validating BMD...\n");
-
+  bmd *request_message = do_parse(filename); // parse that file into valid BMD format and return the BMD
+  Authentication(request_message->envelop.Signature);//function defination is in Authentication.c file
   validation(con, request_message, filename); // Validation by using Validation Function Call
-
   mysql_close(con); // Closing Resources
-
   close(sockfd);
+  printf("Closing Client Socket FD %d.\n",sockfd);
+  printf("**************************************\n\n");
   pthread_exit(NULL);
 }
 
 void request_handler()
-{                                   //workflow starts here
+{
+  //workflow starts here
   struct sockaddr_in addr, cl_addr; // Socket Variable declaration
   int sockfd, len, ret;  // Socket Variable declaration
   char buffer[BUF_SIZE];            // buffer size of declared BUF_SIZE
@@ -86,9 +74,9 @@ void request_handler()
   }
   printf("Socket created...\n");
 
-  // if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0){
-  //   fprintf(stderr,"ERROR : setsockopt(SO_REUSEADDR) failed\n");
-  // }
+  if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0){
+    fprintf(stderr,"ERROR : setsockopt(SO_REUSEADDR) failed\n");
+  }
 
   memset(&addr, 0, sizeof(addr)); // filling memory with a constant byte
 
@@ -115,16 +103,17 @@ void request_handler()
   for (;;)
   { //infinite loop to listen continous connection made by client
 
-    int newsockfd = accept(sockfd, (struct sockaddr *)&cl_addr, &len); // making connection
-    if (newsockfd < 0)
+    int * clientsockfd=malloc(sizeof(int));
+    *clientsockfd = accept(sockfd, (struct sockaddr *)&cl_addr, &len); // making connection
+    if (*clientsockfd < 0)
     {
       printf("Error accepting connection!\n");  //when client closes, throws error accepting connection
       exit(1);
     }
-    printf("Connection accepted...\n");
+    printf("Connection accepted for Client Socket FD %d.\n",*clientsockfd);
 
     // child thread will handle client
-    if(pthread_create(&threads[count%NUM_THREADS],NULL,work,&newsockfd)!=0){
+    if(pthread_create(&threads[count%NUM_THREADS],NULL,serve,clientsockfd)!=0){
 			 printf ("ERROR: child thread not created\n");
 			 exit(-1);
 		}

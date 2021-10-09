@@ -32,11 +32,11 @@ void Authentication(char *sign)
 	//printf("row=%s\n",temp);
 	if (strcmp(temp, "0") == 0)
 	{
-		printf("Authentication Failed\n");
+		printf("[-] Authentication Failed\n");
 	}
 	else
 	{
-		printf("Authentication Successfull.\n");
+		printf("[+] Authentication Successfull.\n");
 	}
 }
 /*void main (){

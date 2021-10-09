@@ -59,8 +59,8 @@ int send_mail(char *to, char *text)
   printf("\n********| \"Mail sent successfully\" |********\n");
   return 0;
 }
-int main()
-{
- // char *s = "HELL0";
-  int n=send_mail("rohitbhamu6@gmail.com","/home/rohit/Bat/esb_proj/src/esb_app/output_1.json");
-}
+// int main()
+// {
+//  // char *s = "HELL0";
+//   int n=send_mail("rohitbhamu6@gmail.com","/home/rohit/Bat/esb_proj/src/esb_app/output_1.json");
+// }

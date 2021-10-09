@@ -3,7 +3,8 @@
 / Designation : Senior Technical Member
 / Employer : Broadridge
 */
-
+#ifndef HEADER_FILE
+#define HEADER_FILE
 //Structure for BMD Message data
 typedef struct {
     char *MessageID;
@@ -20,7 +21,7 @@ typedef struct {
     char* payload;
 }bmd;
 
-
+#endif
 // typedef struct {
 //     char* sender;
 //     char* destination;
@@ -30,4 +31,3 @@ typedef struct {
 //     char* reference_id;
 //     char* create_on;
 // } bmd_envelop;
-

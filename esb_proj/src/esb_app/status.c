@@ -1,12 +1,13 @@
 #include "threads.h"
 #include "status.h"
+#include "mysqlconnect.h"
 
-void status_done(char *id)
+void update_status(char *id, char* status,char * status_details)
 {
-
-	char done[20001];
-	snprintf(done, sizeof(done), "update esb_request set status='Done',status_details='Sucessfully reached the dest' where id=%s", id);
-	if (mysql_query(con, done))
+	MYSQL *con = connect_mysql();
+	char buff[20001];
+	snprintf(buff, sizeof(buff), "update esb_request set status='%s',status_details='%s' where id=%s",status,status_details,id);
+	if (mysql_query(con, buff))
 	{
 		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
 		exit(1);

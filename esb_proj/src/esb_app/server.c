@@ -5,6 +5,11 @@
 // #include "mysqlconnect.h"
 
 int main(int argc, char const *argv[]) {
+  printf("\n  ------------------------------------------------------------\n");
+  printf("  |                                                          |\n");
+  printf("  |                  WELCOME IN BAT ESB  /\\                  |\n");
+  printf("  |                                                          |\n");
+  printf("  ------------------------------------------------------------\n\n");
   //creating child process
   pid_t pid = fork();
   //fork will negative value if it failed
@@ -14,12 +19,13 @@ int main(int argc, char const *argv[]) {
   }
   //fork will zero to child process
   else if (pid == 0){
+    // while(1){sleep(100);};
     request_handler();//child will handle incomming request
   }
   //fork will positive pid to parent process
   else{
-    while(1){sleep(100);};
-    // start_esb_request_poller_thread();//parent will do polling and assigning task to threads
+    // while(1){sleep(100);};
+    start_esb_request_poller_thread();//parent will do polling and assigning task to threads
   }
   return 0;
 }

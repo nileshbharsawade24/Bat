@@ -3,9 +3,9 @@
 #include <libxml2/libxml/xpath.h>
 #include  <stdio.h>
 #include <stdlib.h>
-#include "mysqlconnect.h"
+#include "esb.h"
 
-xmlDocPtr load_xml_doc(char *xml_file_path);
-xmlXPathObjectPtr get_nodes_at_xpath(xmlDocPtr doc, xmlChar *xpath);
-xmlChar* get_element_text(char *node_xpath, xmlDocPtr doc);
-message_data* do_parse(char *file);
+// xmlDocPtr load_xml_doc(char *xml_file_path);
+// xmlXPathObjectPtr get_nodes_at_xpath(xmlDocPtr doc, xmlChar *xpath);
+// xmlChar* get_element_text(char *node_xpath, xmlDocPtr doc);
+bmd* do_parse(char *file);

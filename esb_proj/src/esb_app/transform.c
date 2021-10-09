@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 int i = 0;
 /*transforming to json*/
 
@@ -8,39 +9,28 @@ char *transform_to_json(char *source, char *payload)
   i++;
 
   char filename[20];
-  char *file = malloc(20);
-  strcpy(file,filename);
+  char *file = malloc(50*(sizeof(char)));
 
   char op[20001];
-  snprintf(filename, sizeof(filename), "output_%d.json", i);
+  sprintf(filename, "output_%d.json", i);
+  strcpy(file,filename);
   snprintf(op, sizeof(op), "{\n\t\"source\": \"%s\",\n\t\"payload\": \"%s\"\n}", source, payload);
   printf("successfully transformed to JSON, filename=%s\n",filename);
   FILE *fp = fopen(filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
-  char *file = filename;
   return file;
 }
 
 /*transforming to csv*/
-
-char *transform_to_csv(char *source, char *payload)
+char * transform_to_csv(char *token, char *payload)
 {
-  i++;
-
-  char filename[20];
-  char *file = malloc(20);
-  strcpy(file,filename);
-
-  char op[20001];
-  snprintf(filename, sizeof(filename), "output_%d.csv", i);
-  snprintf(op, sizeof(op), "source\tpayload\n%s\t%s\n", source, payload);
-  printf("successfully transformed to CSV, filename=%s\n",filename);
-  FILE *fp = fopen(filename, "w"); //open that file
-  fprintf(fp, "%s", op);
+  char * fpath=malloc(50*(sizeof(char)));
+  sprintf(fpath, ".tmp/%s.csv",token);
+  FILE *fp = fopen(fpath, "w"); //open that file
+  fprintf(fp, "%s",payload);
   fclose(fp);
-  char *file = filename;
-  return file;
+  return fpath;
 }
 
 //transforming to html
@@ -48,10 +38,8 @@ char *transform_to_csv(char *source, char *payload)
 char * transform_to_html(char *source, char *payload){
 
   i++;
-  char filename[20];
-  char *file = malloc(20);
-  strcpy(file,filename);
-  sprintf(filename,sizeof(filename), "output_%d.html",i);
+  char * filename=malloc(50*(sizeof(char)));
+  sprintf(filename,"output_%d.html",i);
 
   FILE *fp= fopen(filename,"w");
     fprintf(fp,"<!DOCTYPE html>");
@@ -78,7 +66,7 @@ char * transform_to_html(char *source, char *payload){
 
     fclose(fp);
 
-    return file;
+    return filename;
 
 }
 
@@ -89,17 +77,13 @@ char *transform_to_xml(char *source, char *payload)
 {
   i++;
 
-  char filename[20];
-  char *file = malloc(20);
-  strcpy(file,filename);
-
+  char * filename=malloc(50*sizeof(char));
   char op[20001];
-  snprintf(filename, sizeof(filename), "output_%d.xml", i);
+  sprintf(filename, "output_%d.xml", i);
   snprintf(op, sizeof(op), "<BMD>\n\t<Envelop>\n\t\t<source>%s</source>\n\t\t<payload>%s</payload>\n\t</Envelop>\n</BMD>", source, payload);
   printf("successfully transformed to XML, filename=%s\n",filename);
   FILE *fp = fopen(filename, "w"); //open that file
   fprintf(fp, "%s", op);
   fclose(fp);
-  char *file = filename;
-  return file;
+  return filename;
 }
