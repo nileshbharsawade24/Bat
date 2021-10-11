@@ -143,16 +143,16 @@ void *child_thread(void *_task)
 		}
 	}
 
-	// if (strcmp(transform_key, "JSON") == 0) //comparing to json.
-	// {
-	// 	printf("Transforming to JSON format..\n");
-	// 	jsonfile = transform_to_json(Source, payload);
-	// 	if (jsonfile == NULL)
-	// 	{
-	// 		printf("Unable to transform\n");
-	// 		exit(1);
-	// 	}
-	// }
+	if (strcmp(transform_key, "JSON") == 0) //comparing to json.
+	{
+		printf("Transforming to JSON format..\n");
+		output_fname = transform_to_json(token, data->payload);
+		if (output_fname == NULL)
+		{
+			printf("Unable to transform\n");
+			exit(1);
+		}
+	}
 
 
 	// if (strcmp(transform_key, "XML") == 0)//comparing for xml
@@ -164,8 +164,8 @@ void *child_thread(void *_task)
 	// 		printf("Unable to transform\n");
 	// 		exit(1);
 	// 	}
-	//
-	// }
+	
+	}
 
 
 	/*transport process*/
@@ -213,21 +213,51 @@ void *child_thread(void *_task)
 		}
 	}
 
+
+	
 	// //via email transport
-	//
-	// if (strcmp(t.transport_key, "SMTP") == 0)
-	// {
-	// 	printf("transporting via SMTP\n");
-	//
-	// 	if (send_mail(t.transport_value, jsonfile)) //sending the converted jsonfile via email.
-	// 	{
-	// 		printf("[-]Error in send_mail\n");
-	// 		exit(1);
-	// 	}
-	// }
-	//
+	
+	 if (strcmp(transport_key, "SMTP") == 0)
+	 {
+		 	temp=td;
+			 char *to,*from,*subject; //body will be html file
+		// 	printf("transporting via SMTP\n");
+		//
+		//get data from temp //line 192
+		while(temp){
+			if(strcmp(temp->data.key,"destination_mail")==0){
+				to=temp->data.value;
+			}
+			else if(strcmp(temp->data.key,"sender_mail")==0){
+				from=temp->data.value;
+			}
+			else if(strcmp(temp->data.key,"subject")==0){
+				subject=temp->data.value;
+			}else if(srcmp(temp->data.key, "cc")==0){
+				cc=temp->data.value;
+			}
+			temp=temp->next;
+		}
+
+
+		if (send_mail(to,from,cc,subject, output_fname)==false) //sending the converted jsonfile via email., to, from , subject, body 
+		{
+			printf("[-]Error in sending via Mail\n");
+			update_status(taken_task->id,"failed","Failed in transportation operation.");
+			cleanup(taken_task->fpath,output_fname);
+		}
+		else{
+			printf("[+] Transported via SMTP\n");
+			update_status(taken_task->id,"done","Successfully reached the destination.");
+			cleanup(taken_task->fpath,output_fname);
+
+		}
+	}
+	
+
 	// //via HTTP transport
-	//
+	// http_url ,temp me kis nam se h? key==api;
+	
 	// if (strcmp(t.transport_key, "HTTP") == 0)
 	// {
 	// 	printf("transporting via HTTP\n");

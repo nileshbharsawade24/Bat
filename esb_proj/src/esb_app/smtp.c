@@ -5,12 +5,13 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include <curl/curl.h>
 #include "smtp.h"
 #define FROM_ADDR "<esbtest321@gmail.com>"
 #define CC_ADDR "<rohitbhamu6@gmail.com>"
 
-int send_mail(char *to, char *text)
+bool send_mail(char *to, char *from, char *subject, char *filename)
 {
   //text is file path for JSON
 
@@ -24,7 +25,7 @@ int send_mail(char *to, char *text)
   if (curl)
   {
     /* This is the URL for your mailserver */
-    curl_easy_setopt(curl, CURLOPT_USERNAME, "esbtest321@gmail.com");
+    curl_easy_setopt(curl, CURLOPT_USERNAME, from); // here it is "esbtest321@gmail.com" -saved in database
     curl_easy_setopt(curl, CURLOPT_PASSWORD, "testesb@321"); //enter password
 
     curl_easy_setopt(curl, CURLOPT_URL, "smtp://smtp.gmail.com:587/");
@@ -37,7 +38,7 @@ int send_mail(char *to, char *text)
     curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 
     //JSON file to be send
-    char *filepath = text;
+    char *filepath = filename;
     FILE *fd = fopen(filepath, "r");
     //         curl_easy_setopt(curl, CURLOPT_READDATA, fp);
     curl_easy_setopt(curl, CURLOPT_READDATA, fd);
@@ -50,14 +51,14 @@ int send_mail(char *to, char *text)
     if (res != CURLE_OK)
     {
       fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
-      return -1;
+      return false;
     }
     /* Free the list of recipients */
     curl_slist_free_all(recipients);
     curl_easy_cleanup(curl);
   }
   printf("\n********| \"Mail sent successfully\" |********\n");
-  return 0;
+  return true;
 }
 // int main()
 // {
