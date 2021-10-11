@@ -22,3 +22,4 @@
 | 6 Oct 2021   | Updated structure of BMD Data, Documentation | Documentation, Error solving |
 | **PROJECT REPOSITORY FLIPED** |  **OLD REPOSITORY -> CAMEL** | **NEW_REPOSITORY -> BAT**|
 | 7 Oct 2021   | Code reading | Code reading |
+| 8 Oct 2021   | Warning removed, Code integration , HTML Transformation | Warning removed, fixed race conditions, Code integration with FTP correction |
