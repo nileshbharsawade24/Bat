@@ -143,16 +143,19 @@ void *child_thread(void *_task)
 		}
 	}
 
-	// if (strcmp(transform_key, "JSON") == 0) //comparing to json.
-	// {
-	// 	printf("Transforming to JSON format..\n");
-	// 	jsonfile = transform_to_json(Source, payload);
-	// 	if (jsonfile == NULL)
-	// 	{
-	// 		printf("Unable to transform\n");
-	// 		exit(1);
-	// 	}
-	// }
+	if (strcmp(transform_key, "html") == 0) //comparing to html.
+	{
+		output_fname = transform_to_html(token,data->payload);
+		if (output_fname == NULL)
+		{
+			printf("Unable to transform\n");
+			update_status(taken_task->id,"failed","Failed in transformation operation.");
+			cleanup(taken_task->fpath,output_fname);
+		}
+		else{
+			printf("[+] Transformed to HTML for task_id..%s\n",taken_task->id);
+		}
+	}
 
 
 	// if (strcmp(transform_key, "XML") == 0)//comparing for xml
@@ -213,18 +216,17 @@ void *child_thread(void *_task)
 		}
 	}
 
-	// //via email transport
-	//
-	// if (strcmp(t.transport_key, "SMTP") == 0)
-	// {
-	// 	printf("transporting via SMTP\n");
-	//
-	// 	if (send_mail(t.transport_value, jsonfile)) //sending the converted jsonfile via email.
-	// 	{
-	// 		printf("[-]Error in send_mail\n");
-	// 		exit(1);
-	// 	}
-	// }
+	//via email transport
+	if (strcmp(transport_key,"smtp") == 0)
+	{
+		printf("transporting via SMTP\n");
+
+		if (send_mail(t.transport_value, jsonfile)) //sending the converted jsonfile via email.
+		{
+			printf("[-]Error in send_mail\n");
+			exit(1);
+		}
+	}
 	//
 	// //via HTTP transport
 	//

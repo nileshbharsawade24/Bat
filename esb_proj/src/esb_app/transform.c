@@ -36,11 +36,10 @@ char * transform_to_csv(char *token, char *payload)
 
 //transforming to html
 
-char * transform_to_html(char *source, char *payload){
+char * transform_to_html(char *token, char *payload){
 
-  i++;
   char * filename=malloc(50*(sizeof(char)));
-  sprintf(filename,"output_%d.html",i);
+  sprintf(filename,"./.tmp/%s.html",token);
 
   FILE *fp= fopen(filename,"w");
     fprintf(fp,"<!DOCTYPE html>");
@@ -68,7 +67,6 @@ char * transform_to_html(char *source, char *payload){
     fclose(fp);
 
     return filename;
-
 }
 
 

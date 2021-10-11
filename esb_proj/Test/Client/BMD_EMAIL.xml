@@ -1,0 +1,24 @@
+<BMD>
+    <Envelop>
+        <MessageID>A9ECAEF2-107A-4452-9553-043B6D25386E</MessageID>
+        <MessageType>send_mail</MessageType>
+        <Sender>user_app_123</Sender>
+        <Destination>email_dest_123</Destination>
+        <CreationDateTime>2020-08-12T05:18:00+0000</CreationDateTime>
+        <Signature>63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c</Signature>
+        <ReferenceID>INV-PROFILE-889712</ReferenceID>
+        <UserProperties>
+            <key1>Value1</key1>
+            <key2>Value2</key2>
+        </UserProperties>
+    </Envelop>
+    <Payload>Dear Mr./Ms xyz,
+
+We at ABC are pleased to inform you that in OCTOBER we shall be having the 90% sale. We believe you would benefit greatly from purchasing from us as we give you the best prices and rates for all the commodities under one roof!
+
+We hope you will be present for the sale. We welcome you officially to the ABC family.
+
+Regards,
+Mr. PKO
+ABC</Payload>
+</BMD>

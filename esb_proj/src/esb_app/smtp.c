@@ -10,7 +10,7 @@
 #define FROM_ADDR "<esbtest321@gmail.com>"
 #define CC_ADDR "<rohitbhamu6@gmail.com>"
 
-int send_mail(char *to, char *text)
+int send_mail(char *to,char *, char *text)
 {
   //text is file path for JSON
 
