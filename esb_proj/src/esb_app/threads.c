@@ -9,6 +9,7 @@
 #include "mysqlconnect.h"
 #include "http_transport.h"
 #include "ftp_transport.h"
+#include "smtp.h"
 #define NUM_THREADS 5
 // static char *unix_socket = NULL;
 //unsigned int port = 3306; // mysql-server port number
@@ -157,18 +158,20 @@ void *child_thread(void *_task)
 		}
 	}
 
-
-	// if (strcmp(transform_key, "XML") == 0)//comparing for xml
-	// {
-	// 	printf("No transformation Needed\n");
-	// 	xmlfile = transform_to_xml(Source, payload);
-	// 	if (xmlfile == NULL)
-	// 	{
-	// 		printf("Unable to transform\n");
-	// 		exit(1);
-	// 	}
-	//
-	// }
+	if (strcmp(transform_key, "json") == 0)//comparing for xml
+	{
+		printf("No transformation Needed\n");
+		output_fname = transform_to_json(token, data->payload);
+		if (output_fname == NULL)
+		{
+			printf("Unable to transform\n");
+			update_status(taken_task->id,"failed","Failed in transformation operation.");
+			cleanup(taken_task->fpath,output_fname);
+		}
+		else{
+			printf("[+] Transformed to json for task_id..%s\n",taken_task->id);
+		}
+	}
 
 
 	/*transport process*/
@@ -216,33 +219,80 @@ void *child_thread(void *_task)
 		}
 	}
 
-	//via email transport
-	if (strcmp(transport_key,"smtp") == 0)
-	{
-		printf("transporting via SMTP\n");
 
-		if (send_mail(t.transport_value, jsonfile)) //sending the converted jsonfile via email.
+
+	// //via email transport
+
+	 if (strcmp(transport_key, "smtp") == 0)
+	 {
+		 	temp=td;
+			char *to,*from,*cc,*from_password; //body will be html file
+		// 	printf("transporting via SMTP\n");
+		//
+		//get data from temp //line 192
+		while(temp){
+			if(strcmp(temp->data.key,"to")==0){
+				to=temp->data.value;
+			}
+			else if(strcmp(temp->data.key,"from")==0){
+				from=temp->data.value;
+			}
+			else if(strcmp(temp->data.key, "cc")==0){
+				cc=temp->data.value;
+			}
+			else if(strcmp(temp->data.key, "from_password")==0){
+				from_password=temp->data.value;
+			}
+			temp=temp->next;
+		}
+
+
+		if (send_mail(to,from,from_password,cc,output_fname)==false) //sending the converted jsonfile via email., to, from , subject, body
 		{
-			printf("[-]Error in send_mail\n");
-			exit(1);
+			printf("[-]Error in sending via Mail\n");
+			update_status(taken_task->id,"failed","Failed in transportation operation.");
+			cleanup(taken_task->fpath,output_fname);
+		}
+		else{
+			printf("[+] Transported via MAIL\n");
+			update_status(taken_task->id,"done","Successfully reached the destination.");
+			cleanup(taken_task->fpath,output_fname);
+
 		}
 	}
-	//
-	// //via HTTP transport
-	//
-	// if (strcmp(t.transport_key, "HTTP") == 0)
-	// {
-	// 	printf("transporting via HTTP\n");
-	// 	if (!(http(t.transport_value, csvfile)))//put function call for transport via HTTP here;
-	// 	{
-	// 		printf("[-]Error in sending via http\n");
-	// 		exit(1);
-	// 	}
-	// }
+
+
+	//via HTTP transport
+	if (strcmp(transport_key, "http") == 0)
+	{
+		temp=td;
+		char *api;
+
+	  //get data from temp //line 192
+		while(temp){
+			if(strcmp(temp->data.key,"api")==0){
+				api=temp->data.value;
+				break;
+			}
+			temp=temp->next;
+		}
+
+		if (http(api,output_fname)==false) //sending the converted jsonfile via email., to, from , subject, body
+		{
+			printf("[-]Error in sending via HTTP\n");
+			update_status(taken_task->id,"failed","Failed in transportation operation.");
+			cleanup(taken_task->fpath,output_fname);
+		}
+		else{
+			printf("[+] Transported via HTTP\n");
+			update_status(taken_task->id,"done","Successfully reached the destination.");
+			cleanup(taken_task->fpath,output_fname);
+		}
+
+	}
 
 	/*status Done*/
-	// update_status(taken_task->id,"done","Successfully reached the destination.");
-	// cleanup(taken_task->fpath,output_fname);
+	cleanup(taken_task->fpath,output_fname);
 }
 
 /*polling request starts here*/

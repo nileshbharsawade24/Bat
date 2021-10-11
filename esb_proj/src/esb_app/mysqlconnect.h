@@ -20,7 +20,7 @@
 //     char *ReferenceID;
 // } message_data; //It is used to return the entire data that we have mentioned in the struct after parsing.
 
-void insert(MYSQL *con, bmd *msg, char *filename);
-void validation(MYSQL *con, bmd *msg, char *file);
+char* insert(MYSQL *con, bmd *msg, char *filename);
+bool validation(MYSQL *con, bmd *msg, char *file);
 MYSQL *connect_mysql();
 // #endif

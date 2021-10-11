@@ -12,7 +12,7 @@
 #include "handle_request.h"
 #include "Authentication.h"
 
-#define PORT 4445
+#define PORT 8888
 #define BUF_SIZE 2000
 #define CLADDR_LEN 100
 #define SIZE 1024
@@ -49,7 +49,27 @@ void* serve(void * fd){
   MYSQL *con = connect_mysql(); // establish connection between the MySql and server
   bmd *request_message = do_parse(filename); // parse that file into valid BMD format and return the BMD
   Authentication(request_message->envelop.Signature);//function defination is in Authentication.c file
-  validation(con, request_message, filename); // Validation by using Validation Function Call
+  // validation(con, request_message, filename); // Validation by using Validation Function Call
+  char * reply=malloc(500*sizeof(char));
+  if(validation(con, request_message, filename)){ // Validation by using Validation Function Call
+    char * correlation_id=insert(con, request_message, filename);
+    // printf("-->%s\n",correlation_id);
+    sprintf(reply,"-----------------------------------------------------------------------\n"
+                  "REQUEST ACCEPTED.\n"
+                  "\"%s\" is your Correlation Id to check the status later.\n"
+                  "-----------------------------------------------------------------------\n",correlation_id);
+  }
+  else{
+    sprintf(reply,"-----------------------------------------------------------------------\n"
+                  "REQUEST REJECTED.\n"
+                  "-----------------------------------------------------------------------\n");
+  }
+  // printf("%s\n",reply);
+  // if(send(sockfd, reply, strlen(reply),0)==-1){
+  //   printf("NOT sended\n");
+  // }
+  // printf("sended\n");
+  free(reply);
   mysql_close(con); // Closing Resources
   close(sockfd);
   printf("Closing Client Socket FD %d.\n",sockfd);

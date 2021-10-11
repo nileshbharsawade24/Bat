@@ -12,5 +12,5 @@ void update_status(char *id, char* status,char * status_details)
 		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
 		exit(1);
 	}
-	printf("********|\"Status Updated to Done\"|*****\n");
+	// printf("********|\"Status Updated to Done\"|*****\n");
 }

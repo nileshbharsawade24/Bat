@@ -56,8 +56,8 @@ Authentication.o: Authentication.c
 	gcc -c $(headers) Authentication.c
 
 
-# setup: database_handler/setup.c
-# 	gcc $(headers) -o setup database_handler/setup.c $(libraries)
+setup: setup.c
+	gcc $(headers) -o setup setup.c $(libraries)
 
 clean:
-	rm *.o server *.csv *.json file*
+	rm *.o setup server

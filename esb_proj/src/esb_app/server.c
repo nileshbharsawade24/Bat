@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include<sys/wait.h>
 #include "handle_request.h"
 #include "threads.h"
 // #include "mysqlconnect.h"
@@ -21,11 +22,13 @@ int main(int argc, char const *argv[]) {
   else if (pid == 0){
     // while(1){sleep(100);};
     request_handler();//child will handle incomming request
+    exit(0);
   }
   //fork will positive pid to parent process
   else{
     // while(1){sleep(100);};
     start_esb_request_poller_thread();//parent will do polling and assigning task to threads
+    wait(NULL);
   }
   return 0;
 }

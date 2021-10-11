@@ -24,7 +24,7 @@
 
 /* fuction to insert the data to mysql*/
 
-void insert(MYSQL *con, bmd *msg, char *filename)
+char* insert(MYSQL *con, bmd *msg, char *filename)
 {
 
 	char *q = (char *)malloc(500); // memory allocation to string query which nis going to be concated tor insert query
@@ -53,7 +53,17 @@ void insert(MYSQL *con, bmd *msg, char *filename)
 		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
 		exit(1);
 	}
-	q = NULL; // Free the allocated memory
+	free(q);
+	if (mysql_query(con, "SELECT LAST_INSERT_ID()")){
+		return NULL;
+	}
+	MYSQL_RES *result_rows = mysql_store_result(con);
+	MYSQL_ROW result_row=mysql_fetch_row(result_rows);
+	// printf("%s %s\n",result_row[0],result_row[1]);
+	if(result_row){
+		return result_row[0];
+	}
+	return NULL;
 }
 
 /* mysql server connection and validation of BMD file*/
@@ -86,7 +96,7 @@ MYSQL *connect_mysql()
 
 /*validation of BMD*/
 
-void validation(MYSQL *con, bmd *msg, char *file)
+bool validation(MYSQL *con, bmd *msg, char *file)
 {
 	MYSQL_RES *res;
 	MYSQL_ROW row;
@@ -98,25 +108,14 @@ void validation(MYSQL *con, bmd *msg, char *file)
 	}
 	//printf("yes=:%s\n",file);
 	res = mysql_store_result(con);
-	int flag=0;
 	while (row = mysql_fetch_row(res)) // this is used to fetch each column.
 	{
 
 		if ((strcmp(msg->envelop.Sender, row[1]) == 0) && (strcmp(msg->envelop.Destination, row[2]) == 0) && (strcmp(msg->envelop.MessageType, row[3]) == 0))
 		{
 			printf("[+] VALIDATION IS OK\n");
-			flag = 1;
-
-			insert(con, msg, file);
-
-			printf("[+] Data inserted to esb_request table.\n");
-			break;
+			return true;
 		}
 	}
-
-	if (flag == 0)
-	{
-		printf("[-] Error Something went wrong in validation\n");
-		exit(1);
-	}
+	return false;
 }

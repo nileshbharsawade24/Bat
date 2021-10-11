@@ -8,7 +8,8 @@
 #include<unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#define PORT 4445
+#include <time.h>
+#define PORT 8888
 #define BUF_SIZE 2000
 #define SIZE 1024
 
@@ -46,7 +47,7 @@ int main(int argc, char**argv) {
   printf("Error creating socket!\n");
   exit(1);
  }
- printf("Socket created on PORT NUMBER %d ...\n",PORT);
+ // printf("Socket created on PORT NUMBER %d ...\n",PORT);
 
  memset(&addr, 0, sizeof(addr));
  addr.sin_family = AF_INET;
@@ -58,7 +59,7 @@ int main(int argc, char**argv) {
   printf("Error connecting to the server!\n");
   exit(1);
  }
- printf("Connected to the server...\n");
+ // printf("Connected to the server...\n");
 
  memset(buffer, 0, BUF_SIZE);
 
@@ -75,9 +76,18 @@ int main(int argc, char**argv) {
   }
 
   send_file(fp, sockfd);
+  // bzero(buffer, BUF_SIZE);
+  // struct timeval tv;
+  // tv.tv_sec = 2; //2 second timer
+  // setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+
+  // printf("waiting...\n");
+  // read(sockfd, buffer, BUF_SIZE);
+  // printf("->%s<-",buffer);
+  // printf("\n");
   printf("[+]File data sent successfully.\n");
 
-  printf("[+]Closing the connection.\n");
+  // printf("[+]Closing the connection.\n");
 
 
   //here, for demo purpose it is alive until client closes it, otherwise no meaning

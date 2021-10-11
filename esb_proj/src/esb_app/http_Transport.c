@@ -4,7 +4,7 @@
 #include <json-c/json.h>
 #include <string.h>
 
-int http(char *http_url, char *filename)
+bool http(char *http_url, char *filename)
 {
     FILE *fp, *f;
     fp = fopen(filename, "r");
@@ -51,21 +51,24 @@ int http(char *http_url, char *filename)
             curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
             if (response_code >= 200 && response_code <= 299 && response_code != CURLE_ABORTED_BY_CALLBACK)
             {
-                printf("\nrequest succesfully sent with response Code %ld\n", response_code);
-                status = 1;
+                return true;
+            }
+            else{
+              return false;
             }
         }
 
         if (res != CURLE_OK)
         {
-            fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+            return false;
         }
 
         curl_easy_cleanup(curl);
     }
-
-    curl_global_cleanup();
-    return status;
+    else{
+      curl_global_cleanup();
+      return false;
+    }
 }
 
 /*void main()
