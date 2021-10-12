@@ -6,13 +6,20 @@
 
 char *transform_to_json(char *token, char *payload)
 {
+  if(!token || !payload)return NULL;
   char *file = malloc(50*(sizeof(char)));
-  char op[20001];
-  sprintf(file, "./%s.json",token);  char* sender=NULL;
+  char op[1001];
+  if(sprintf(file, ".tmp/%s.json",token)>49){
+    return NULL;
+  }
   char* field1=strtok(payload,",");
   char* field2=payload;
+  if(strlen(payload)>900)return NULL;
   snprintf(op, sizeof(op), "{\n\t\"acc_no\": \"%s\",\n\t\"acc_type\": \"%s\"\n}", field1, field2);
   FILE *fp = fopen(file, "w"); //open that file
+  if(fp==NULL){
+    return NULL;
+  }
   fprintf(fp, "%s", op);
   fclose(fp);
   return file;
@@ -21,9 +28,11 @@ char *transform_to_json(char *token, char *payload)
 /*transforming to csv*/
 char * transform_to_csv(char *token, char *payload)
 {
+  if(!token || !payload)return NULL;
   char * fpath=malloc(50*(sizeof(char)));
-  sprintf(fpath, ".tmp/%s.csv",token);
+  if(sprintf(fpath, ".tmp/%s.csv",token)>49)return NULL;
   FILE *fp = fopen(fpath, "w"); //open that file
+  if(fp==NULL)return NULL;
   fprintf(fp, "%s",payload);
   fclose(fp);
   return fpath;
@@ -32,11 +41,12 @@ char * transform_to_csv(char *token, char *payload)
 //transforming to html
 
 char * transform_to_html(char *token, char *payload){
-
+  if(!token || !payload)return NULL;
   char * filename=malloc(50*(sizeof(char)));
-  sprintf(filename,".tmp/%s.html",token);
+  if(sprintf(filename,".tmp/%s.html",token)>49)return NULL;
 
   FILE *fp= fopen(filename,"w");
+  if(fp==NULL)return NULL;
     fprintf(fp,"<!DOCTYPE html>\n");
     fprintf(fp,"    <html>\n");
     fprintf(fp,"        <head>\n");

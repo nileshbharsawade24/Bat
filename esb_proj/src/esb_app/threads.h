@@ -10,8 +10,6 @@
 // #define DETAILS "select sender_id,dest_id,message_type from esb_request where id=%s"
 #define ROUTE_ID "select route_id from routes where sender='%s' && destination='%s' && message_type='%s'"
 
-void start_esb_request_poller_thread();
-
 typedef struct
 {
 	char *key;
@@ -29,3 +27,7 @@ typedef struct {
     char * id;
     char* fpath;
 }task;//created this in order to pass two argument to child thread
+
+void start_esb_request_poller_thread();
+char *check_transform(bmd *msg);
+transport_data* check_transport(bmd *msg);

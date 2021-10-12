@@ -24,29 +24,31 @@ void cleanup(char * bmd_file, char* output_file){
 /*below check_transform() function returns the "JSON" or"CSV" or"XML" string as transform_key which extracted from the transform_config table for the perticular sender,dest,msg_type.*/
 char *check_transform(bmd *msg)
 {
+	if(msg==NULL)return NULL;
 	char t[1001];
 	char *transform_key;
 	MYSQL *con = connect_mysql();
-	MYSQL_ROW row;
 
 	snprintf(t, sizeof(t), ROUTE_ID, msg->envelop.Sender, msg->envelop.Destination, msg->envelop.MessageType);
 	if (mysql_query(con, t))
 	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
+		return NULL;;
 	}
-	MYSQL_RES * res = res = mysql_store_result(con);
+	MYSQL_RES * res = mysql_store_result(con);
 	char * route_id;
+	MYSQL_ROW row;
+	bool flag=false;
 	while (row = mysql_fetch_row(res))
 	{
+		flag=true;
 		route_id = row[0];
 	}
+	if(!flag)return NULL;
   bzero(t,strlen(t));
 	snprintf(t, sizeof(t), "select config_value from transform_config where route_id=%s and config_key='format'", route_id);
 	if (mysql_query(con, t))
 	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
+		return NULL;
 	}
 	res = mysql_store_result(con);
 	while (row = mysql_fetch_row(res))

@@ -15,9 +15,11 @@
 #define SIZE 1024
 
 bool ftp(char *hostname_or_ip, char* username, char* password, char *filename, char* token){
-
+    if(!hostname_or_ip || !username || !password || !filename || !token)return false;
     char * dump_fname=malloc(200*sizeof(char));
-    sprintf(dump_fname,"./.transport_dump/SFTP_%s_%s_%s_%s.csv",hostname_or_ip,username,password,token);
+    if(sprintf(dump_fname,"./.transport_dump/SFTP_%s_%s_%s_%s.csv",hostname_or_ip,username,password,token)>199){
+      return false;
+    }
     // Open another file for read and one for write
     FILE * f_r=fopen(filename,"r");
     FILE * f_w=fopen(dump_fname,"w");

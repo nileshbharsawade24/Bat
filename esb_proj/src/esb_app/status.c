@@ -9,10 +9,10 @@ bool update_status(char *id, char* status,char * status_details)
 	snprintf(buff, sizeof(buff), "update esb_request set status='%s',status_details='%s' where id=%s",status,status_details,id);
 	if (mysql_query(con, buff))
 	{
-		return false;
 		mysql_close(con);
+		return false;
 	}
-	return true;
 	mysql_close(con);
+	return true;
 	// printf("********|\"Status Updated to Done\"|*****\n");
 }

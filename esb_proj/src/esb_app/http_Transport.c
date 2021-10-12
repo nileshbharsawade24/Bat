@@ -6,8 +6,10 @@
 
 bool http(char *http_url, char *filename)
 {
+    if(!http_url || !filename)return false;
     //create new buffer to copy file input
     FILE * fp = fopen(filename, "r");
+    if(fp==NULL)return false;
     char buffer[1024];
     char c;
     int j=0;
@@ -15,6 +17,7 @@ bool http(char *http_url, char *filename)
     {
         if (c == 10)
             continue;
+        if(j==1023)return false;
         buffer[j++] = c;
     }
     buffer[j]='\0';
@@ -30,8 +33,11 @@ bool http(char *http_url, char *filename)
         //printf("\nString: %s \ndone\n", string);
         curl_easy_setopt(curl, CURLOPT_URL, http_url);      //server's url
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, buffer); //post the file data
+        FILE *wfd = fopen("foo.txt", "w");
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, wfd);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, NULL);
         res = curl_easy_perform(curl);
-
+        remove("foo.txt");
         //checking status code
         if (res == CURLE_OK)
         {
@@ -45,8 +51,7 @@ bool http(char *http_url, char *filename)
               return false;
             }
         }
-
-        if (res != CURLE_OK)
+        else
         {
             return false;
         }
