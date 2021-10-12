@@ -56,7 +56,6 @@ void* serve(void * fd){
       }
       MYSQL_RES *result_rows = mysql_store_result(con);
       MYSQL_ROW result_row=mysql_fetch_row(result_rows);
-      mysql_close(con);
       char * temp;
       if(!result_row){
         temp="null";
@@ -94,7 +93,7 @@ void* serve(void * fd){
     printf("ERROR : NOT sended\n");
   }
   free(reply);
-  // mysql_close(con); // Closing Resources
+  mysql_close(con);
   close(sockfd);
   printf("Closing Client Socket FD %d.\n",sockfd);
   printf("**************************************\n\n");

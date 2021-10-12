@@ -20,6 +20,7 @@ bool Authentication(char *sign)
 	snprintf(z, sizeof(z), "select count(id) from auth where signature='%s'", sign);
 	if ((mysql_query(con, z)))
 	{
+		mysql_close(con);
 		return false;
 	}
 	res = mysql_store_result(con);
@@ -32,11 +33,13 @@ bool Authentication(char *sign)
 	if (strcmp(temp, "0") == 0)
 	{
 		// printf("[-] Authentication Failed\n");
+		mysql_close(con);
 		return false;
 	}
 	else
 	{
 		// p/rintf("[+] Authentication Successfull.\n");
+		mysql_close(con);
 		return true;
 	}
 }
