@@ -35,6 +35,7 @@ char* write_file(int sockfd)
   //usefull link : https://stackoverflow.com/questions/40493016/cant-receive-data-from-socket
   while(read(sockfd,buffer,SIZE)>=0){
     fprintf(fp, "%s", buffer);
+    bzero(buffer, SIZE);
   }
   fclose(fp);
   return filename;
