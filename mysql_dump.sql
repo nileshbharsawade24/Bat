@@ -95,7 +95,7 @@ CREATE TABLE `routes` (
 
 LOCK TABLES `routes` WRITE;
 /*!40000 ALTER TABLE `routes` DISABLE KEYS */;
-INSERT INTO `routes` VALUES (1,'user_app_123','http_dest_123','predict_nationality',_binary ''),(2,'user_app_123','ftp_dest_123','transfer_file',_binary ''),(3,'user_app_123','email_dest_123','transfer_file',_binary '');
+INSERT INTO `routes` VALUES (1,'user_app_123','http_dest_123','hit_api',_binary ''),(2,'user_app_123','ftp_dest_123','transfer_file',_binary ''),(3,'user_app_123','email_dest_123','send_mail',_binary '');
 /*!40000 ALTER TABLE `routes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -144,7 +144,7 @@ CREATE TABLE `transport_config` (
   UNIQUE KEY `route_id` (`route_id`,`config_key`),
   KEY `route_idx` (`route_id`),
   CONSTRAINT `transport_config_ibfk_1` FOREIGN KEY (`route_id`) REFERENCES `routes` (`route_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -153,7 +153,7 @@ CREATE TABLE `transport_config` (
 
 LOCK TABLES `transport_config` WRITE;
 /*!40000 ALTER TABLE `transport_config` DISABLE KEYS */;
-INSERT INTO `transport_config` VALUES (1,1,'method','http'),(2,1,'api','https://api.nationalize.io'),(3,2,'method','ftp'),(4,2,'server_ip_or_hostname','test.rebex.net:22'),(5,2,'username','demo'),(6,2,'password','password'),(7,3,'method','smtp'),(8,3,'subject','ESB testing *IGNORE THIS*'),(9,3,'FROM_ADDR','<esbtest321@gmail.com>'),(10,3,'CC_ADDR','<rohitbhamu6@gmail.com>');
+INSERT INTO `transport_config` VALUES (1,1,'method','http'),(2,1,'api','https://reqbin.com/echo/post/json'),(3,2,'method','ftp'),(4,2,'server_ip_or_hostname','test.rebex.net:22'),(5,2,'username','demo'),(6,2,'password','password'),(7,3,'method','smtp'),(8,3,'from','esbtest321@gmail.com'),(9,3,'to','rohitbhamu6@gmail.com'),(10,3,'cc','b17039.880@gmail.com'),(11,3,'from_password','testesb@321');
 /*!40000 ALTER TABLE `transport_config` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -166,4 +166,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-10-09  6:14:37
+-- Dump completed on 2021-10-12  8:03:43

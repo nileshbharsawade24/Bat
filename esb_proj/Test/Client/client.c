@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <time.h>
-#define PORT 8888
+#define PORT 8887
 #define BUF_SIZE 2000
 #define SIZE 1024
 
@@ -76,16 +76,14 @@ int main(int argc, char**argv) {
   }
 
   send_file(fp, sockfd);
-  // bzero(buffer, BUF_SIZE);
-  // struct timeval tv;
-  // tv.tv_sec = 2; //2 second timer
-  // setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
-
+  bzero(buffer, BUF_SIZE);
+  struct timeval tv;
+  tv.tv_sec =2; //2 second timer
+  setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
   // printf("waiting...\n");
-  // read(sockfd, buffer, BUF_SIZE);
-  // printf("->%s<-",buffer);
-  // printf("\n");
-  printf("[+]File data sent successfully.\n");
+  read(sockfd, buffer, BUF_SIZE);
+  printf("%s",buffer);
+  //printf("[+]File data sent successfully.\n");
 
   // printf("[+]Closing the connection.\n");
 

@@ -11,4 +11,4 @@
 // unsigned int port1 = 3306; // active port in which mysql is running.
 // static char *unix_socket1 = NULL;
 // unsigned int flag1 = 0;
-void Authentication(char *sign);
+bool Authentication(char *sign);

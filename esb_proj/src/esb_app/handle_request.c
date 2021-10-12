@@ -12,7 +12,7 @@
 #include "handle_request.h"
 #include "Authentication.h"
 
-#define PORT 8888
+#define PORT 8887
 #define BUF_SIZE 2000
 #define CLADDR_LEN 100
 #define SIZE 1024
@@ -28,16 +28,13 @@ char* write_file(int sockfd)
 	char *filename = malloc(50 * sizeof(char));
 	sprintf(filename, "./.tmp/BMD_%d_%lu.xml", sockfd, tm);
   fp = fopen(filename, "w"); //open that file
-  while (1)
-  {
-    n = recv(sockfd, buffer, SIZE, 0); //n is number of bytes received or -1 if error occurs
-    if (n <= 0)
-    {
-      break;
-      // return;
-    }
+
+  struct timeval tv;
+  tv.tv_sec=1; //2 second timer
+  setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+  //usefull link : https://stackoverflow.com/questions/40493016/cant-receive-data-from-socket
+  while(read(sockfd,buffer,SIZE)>=0){
     fprintf(fp, "%s", buffer);
-    bzero(buffer, SIZE);
   }
   fclose(fp);
   return filename;
@@ -48,29 +45,56 @@ void* serve(void * fd){
   char * filename = write_file(sockfd); //send to write the input file into directory and return that filename
   MYSQL *con = connect_mysql(); // establish connection between the MySql and server
   bmd *request_message = do_parse(filename); // parse that file into valid BMD format and return the BMD
-  Authentication(request_message->envelop.Signature);//function defination is in Authentication.c file
-  // validation(con, request_message, filename); // Validation by using Validation Function Call
   char * reply=malloc(500*sizeof(char));
-  if(validation(con, request_message, filename)){ // Validation by using Validation Function Call
-    char * correlation_id=insert(con, request_message, filename);
-    // printf("-->%s\n",correlation_id);
-    sprintf(reply,"-----------------------------------------------------------------------\n"
-                  "REQUEST ACCEPTED.\n"
-                  "\"%s\" is your Correlation Id to check the status later.\n"
-                  "-----------------------------------------------------------------------\n",correlation_id);
+  if(Authentication(request_message->envelop.Signature)){//function defination is in Authentication.c file
+    //checking spcial case
+    if(strcmp(request_message->envelop.Destination,"ESB")==0 && strcmp(request_message->envelop.MessageType,"CheckStatus")==0){
+      char * query=malloc(100*sizeof(char));
+      sprintf(query,"select status from esb_request where id=%s",request_message->envelop.ReferenceID);
+      if (mysql_query(con, query)){
+        printf("ERROR : unable to query `%s` database.\n",query);
+      }
+      MYSQL_RES *result_rows = mysql_store_result(con);
+      MYSQL_ROW result_row=mysql_fetch_row(result_rows);
+      mysql_close(con);
+      char * temp;
+      if(!result_row){
+        temp="null";
+      }
+      else{
+        temp=result_row[0]; //returning first row and first column value
+      }
+      sprintf(reply,"-----------------------------------------------------------------------\n"
+                    "STATUS regarding ID %s -> %s.\n"
+                    "-----------------------------------------------------------------------\n",request_message->envelop.ReferenceID,temp);
+    }
+    else{
+      if(validation(con, request_message, filename)){ // Validation by using Validation Function Call
+        char * correlation_id=insert(con, request_message, filename);
+        // printf("-->%s\n",correlation_id);
+        sprintf(reply,"-----------------------------------------------------------------------\n"
+                      "REQUEST ACCEPTED.\n"
+                      "\"%s\" is your Correlation Id to check the status later.\n"
+                      "-----------------------------------------------------------------------\n",correlation_id);
+      }
+      else{
+        sprintf(reply,"-----------------------------------------------------------------------\n"
+                      "VALIDATION FAILED.\n"
+                      "-----------------------------------------------------------------------\n");
+      }
+    }
   }
   else{
     sprintf(reply,"-----------------------------------------------------------------------\n"
-                  "REQUEST REJECTED.\n"
+                  "AUTHENTICATION FAILED.\n"
                   "-----------------------------------------------------------------------\n");
+
   }
-  // printf("%s\n",reply);
-  // if(send(sockfd, reply, strlen(reply),0)==-1){
-  //   printf("NOT sended\n");
-  // }
-  // printf("sended\n");
+  if(write(sockfd, reply, strlen(reply))<0){
+    printf("ERROR : NOT sended\n");
+  }
   free(reply);
-  mysql_close(con); // Closing Resources
+  // mysql_close(con); // Closing Resources
   close(sockfd);
   printf("Closing Client Socket FD %d.\n",sockfd);
   printf("**************************************\n\n");

@@ -5,7 +5,7 @@ run ./aut
 #include "mysqlconnect.h"
 #include "Authentication.h"
 
-void Authentication(char *sign)
+bool Authentication(char *sign)
 {
 	MYSQL *con=connect_mysql();
 	MYSQL_RES *res;
@@ -13,15 +13,14 @@ void Authentication(char *sign)
 	char *temp;
 	//char *temp,*temp2,*temp3;
 
-	printf("Connected to mysql-server\n");
-	printf("\n");
+	// printf("Connected to mysql-server\n");
+	// printf("\n");
 	char z[1001];
 
 	snprintf(z, sizeof(z), "select count(id) from auth where signature='%s'", sign);
 	if ((mysql_query(con, z)))
 	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
+		return false;
 	}
 	res = mysql_store_result(con);
 	while (row = mysql_fetch_row(res))
@@ -32,11 +31,13 @@ void Authentication(char *sign)
 	//printf("row=%s\n",temp);
 	if (strcmp(temp, "0") == 0)
 	{
-		printf("[-] Authentication Failed\n");
+		// printf("[-] Authentication Failed\n");
+		return false;
 	}
 	else
 	{
-		printf("[+] Authentication Successfull.\n");
+		// p/rintf("[+] Authentication Successfull.\n");
+		return true;
 	}
 }
 /*void main (){

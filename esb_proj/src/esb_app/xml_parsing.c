@@ -11,7 +11,7 @@ void Authentication(char *sign);
 xmlDocPtr load_xml_doc(char *xml_file_path) {
     xmlDocPtr doc = xmlParseFile(xml_file_path);
     if (doc == NULL) {
-        fprintf(stderr, "ERROR: Document not parsed successfully. \n");
+        // fprintf(stderr, "ERROR: Document not parsed successfully. \n");
         return NULL;
     }
     return doc;
@@ -73,6 +73,7 @@ bmd* do_parse(char *file){
     char *password="63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c";
     char *sender="756E2EAA-1D5B-4BC0-ACC4-4CEB669408DA";
     xmlDocPtr doc = load_xml_doc(file);
+    if(doc==NULL)return NULL;
     /*Authentication of BMD*/
 
     bmd *msg=malloc(sizeof(bmd));//Ihtout malloc : use of uninitialised value of size 8

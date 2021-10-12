@@ -57,6 +57,7 @@ char *check_transform(bmd *msg)
 	t[1001] = '\0';
 	res = '\0';
 	row = '\0';
+	mysql_close(con);
 	return transform_key;
 }
 
@@ -104,6 +105,7 @@ transport_data* check_transport(bmd * msg)
 		temp->data.value = row[1];
 	}
 	temp->next=NULL;
+	mysql_close(con);
 	return td;
 }
 
@@ -118,6 +120,11 @@ void *child_thread(void *_task)
 	char *output_fname;
 
 	bmd * data = do_parse(taken_task->fpath);
+	if(data==NULL){
+		printf("Unable to parse\n");
+		update_status(taken_task->id,"failed","Failed to parse. There is some problem with its BMD file.");
+		cleanup(taken_task->fpath,output_fname);
+	}
 
 	char *transform_key = check_transform(data); //look at line no 9.
 	char token[20];
@@ -160,7 +167,6 @@ void *child_thread(void *_task)
 
 	if (strcmp(transform_key, "json") == 0)//comparing for xml
 	{
-		printf("No transformation Needed\n");
 		output_fname = transform_to_json(token, data->payload);
 		if (output_fname == NULL)
 		{

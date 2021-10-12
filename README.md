@@ -26,22 +26,35 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
     ```
 
 ## HTTP api to test http_transport() external api (Reference)
-    * https://github.com/public-apis/public-apis
+    * https://reqbin.com/echo/post/json
 
-### Database file:
-* you can find the SQL dump file here : "esb_proj/db.sql" . Dump that using below command :
-`mysql -u test_user -p BAT_DB < db.sql`
+### Setting up database:
+* you can find the SQL dump file "mysq_dump.sql" in main directory. Dump that using below command :<br/>
+    ```
+    mysql -u test_user -p BAT_DB < mysql_dump.sql
+    ```
+* OR use setup.c file. Go inside this path "esb_proj/src/esb_app/" and use below commands :<br/>
+    ```
+      make clean
+      make setup
+      ./setup
+     ```
 
-## Running ESB_TCP
+
+## Running ESB_APPLICATION
 * Server
-    * Go inside this path mentioned " esb_proj/src/esb_app/ " Run server using below commands :<br/>
-    ```
-      make server  
-      ./server
-    ```
+    * Go inside this path mentioned " esb_proj/src/esb_app/ " and run server using below commands :<br/>
+        ```
+          make clean
+          make server  
+          ./server
+        ```
 
 
 
 * Client
-    * Go inside this path mentioned " esb_proj/test/Client/ "You will find "run_client.sh" file.
-    * run "./run_client.sh" to compile and create executable file on server side. if something error rised like permission denied, run "chmod +x run_client.sh" after debugging the error run above mentioned again.
+    * Go inside this path mentioned " esb_proj/test/Client/" and run client using below commands :<br/>
+        ```
+          chmod 777 run_client.sh
+          ./run_client.sh
+        ```

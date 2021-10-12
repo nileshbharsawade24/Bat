@@ -6,32 +6,20 @@
 
 bool http(char *http_url, char *filename)
 {
-    FILE *fp, *f;
-    fp = fopen(filename, "r");
-    int c;
-    int i = 0;
-    //reading the file size
-    while ((c = fgetc(fp)) != EOF)
-    {
-        i++;
-    }
-    fclose(fp); //close the resource
-
     //create new buffer to copy file input
-    f = fopen(filename, "r");
-    char buffer[i];
-    int j = 0;
-    while ((c = fgetc(f)) != EOF)
+    FILE * fp = fopen(filename, "r");
+    char buffer[1024];
+    char c;
+    int j=0;
+    while ((c = fgetc(fp)) != EOF)
     {
         if (c == 10)
             continue;
-        buffer[j] = c;
-        j++;
+        buffer[j++] = c;
     }
-    char *string = buffer; //assiging string to store the input file data
-    fclose(f);             //close the resource
+    buffer[j]='\0';
+    fclose(fp);             //close the resource
 
-    int status = 0;
     CURL *curl;
     CURLcode res;
 
@@ -41,7 +29,7 @@ bool http(char *http_url, char *filename)
     {
         //printf("\nString: %s \ndone\n", string);
         curl_easy_setopt(curl, CURLOPT_URL, http_url);      //server's url
-        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, string); //post the file data
+        curl_easy_setopt(curl, CURLOPT_POSTFIELDS, buffer); //post the file data
         res = curl_easy_perform(curl);
 
         //checking status code
