@@ -97,9 +97,13 @@ MYSQL *connect_mysql()
 /*validation of BMD*/
 
 bool validation(MYSQL *con, bmd *msg, char *file)
-{
+{	
 	MYSQL_RES *res;
 	MYSQL_ROW row;
+	if(con==NULL || msg==NULL ||file==NULL ) {
+		return false;
+	}
+	
 	char *temp, *temp2, *temp3;
 	if ((mysql_query(con, "select *from routes")))
 	{
@@ -113,7 +117,7 @@ bool validation(MYSQL *con, bmd *msg, char *file)
 
 		if ((strcmp(msg->envelop.Sender, row[1]) == 0) && (strcmp(msg->envelop.Destination, row[2]) == 0) && (strcmp(msg->envelop.MessageType, row[3]) == 0))
 		{
-			printf("[+] VALIDATION IS OK\n");
+			//printf("[+] VALIDATION IS OK\n");
 			return true;
 		}
 	}

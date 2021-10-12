@@ -7,6 +7,14 @@
 #include "../../src/esb_app/smtp.h"
 #include "../../src/esb_app/threads.h"
 #include "../../src/esb_app/esb.h"
+#include "../../src/esb_app/Authentication.h"
+#include "../../src/esb_app/handle_request.h"
+#include "../../src/esb_app/mysqlconnect.h"
+#include "../../src/esb_app/xml_parsing.h"
+
+
+
+
 /* This is just to disable an MSVC warning about conditional
  * expressions being constant, which you shouldn't have to do for your
  * code.  It's only here because we want to be able to do silly things
@@ -139,6 +147,40 @@ static MunitResult test_update_status(const MunitParameter params[], void* user_
   return MUNIT_OK;
 }
 
+static MunitResult test_validation(const MunitParameter params[], void* user_data){
+   // if(check_transform(create_bmd_structure("user_app_123x","email_dest_123","send_mail"))!=NULL)return MUNIT_FAIL;
+  //bmd *test = ;
+  MYSQL *con = connect_mysql();
+
+  munit_assert_true((validation(con, create_bmd_structure("user_app_123","email_dest_123","send_mail"),"json")));
+  munit_assert_false((validation(con, create_bmd_structure("user_app_123","email_dest_123","send_mail"),NULL)));
+  munit_assert_false((validation(NULL, create_bmd_structure("user_app_123","email_dest_123","send_mail"),"json")));
+  munit_assert_false((validation(con, create_bmd_structure("invalid_sender","email_dest_123","send_mail"),"json")));
+  munit_assert_false((validation(con, create_bmd_structure("user_app_123","invalid_destination","send_mail"),"json")));
+  munit_assert_false((validation(con, create_bmd_structure("user_app_123","email_dest_123","wrong_message_type"),"json")));
+  return MUNIT_OK;
+}
+
+static MunitResult test_authentication(const MunitParameter params[], void* user_data){
+  munit_assert_true(Authentication("63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c"));
+  munit_assert_false(Authentication("63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113d"));
+  munit_assert_false(Authentication("wrong_auth_token"));
+  munit_assert_false(Authentication("it_should_fail"));
+  munit_assert_false(Authentication("testing_is_going_in_right_direction"));
+
+  return MUNIT_OK;
+}
+
+// static MunitResult test_parser(const MunitParameter params[], void* user_data){
+
+//   return MUNIT_OK;
+// }
+
+// static MunitResult test_insert(const MunitParameter params[], void* user_data){
+
+//   return MUNIT_OK;
+// } 
+
 /* The setup function, if you provide one, for a test will be run
  * before the test, and the return value will be passed as the sole
  * parameter to the test function. */
@@ -184,6 +226,8 @@ static MunitTest test_suite_tests[] = {
   { (char*)"/test_for_http_function", test_http, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { (char*)"/test_for_send_mail", test_send_mail, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { (char*)"/test_for_check_transform", test_check_transform, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_authentication", test_authentication, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_validation", test_validation, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 
