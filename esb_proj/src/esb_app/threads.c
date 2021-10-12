@@ -122,7 +122,9 @@ void *child_thread(void *_task)
 	bmd * data = do_parse(taken_task->fpath);
 	if(data==NULL){
 		printf("Unable to parse\n");
-		update_status(taken_task->id,"failed","Failed to parse. There is some problem with its BMD file.");
+		if(!update_status(taken_task->id,"failed","Failed to parse. There is some problem with its BMD file.")){
+			printf("ERROR : not able to update table in DATABASE\n");
+		}
 		cleanup(taken_task->fpath,output_fname);
 	}
 
@@ -143,7 +145,9 @@ void *child_thread(void *_task)
 		if (output_fname == NULL)
 		{
 			printf("Unable to transform\n");
-			update_status(taken_task->id,"failed","Failed in transformation operation.");
+			if(!update_status(taken_task->id,"failed","Failed in transformation operation.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 		else{
@@ -157,7 +161,9 @@ void *child_thread(void *_task)
 		if (output_fname == NULL)
 		{
 			printf("Unable to transform\n");
-			update_status(taken_task->id,"failed","Failed in transformation operation.");
+			if(!update_status(taken_task->id,"failed","Failed in transformation operation.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 		else{
@@ -171,7 +177,9 @@ void *child_thread(void *_task)
 		if (output_fname == NULL)
 		{
 			printf("Unable to transform\n");
-			update_status(taken_task->id,"failed","Failed in transformation operation.");
+			if(!update_status(taken_task->id,"failed","Failed in transformation operation.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 		else{
@@ -215,12 +223,16 @@ void *child_thread(void *_task)
 		if (ftp(hostname_or_ip, username, password, output_fname, token)==false)//put function call for transport via HTTP here;
 		{
 			printf("[-]Error in sending via FTP\n");
-			update_status(taken_task->id,"failed","Failed in transportation operation.");
+			if(!update_status(taken_task->id,"failed","Failed in transportation operation.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 		else{
 			printf("[+] Transported via FTP\n");
-			update_status(taken_task->id,"done","Successfully reached the destination.");
+			if(!update_status(taken_task->id,"done","Successfully reached the destination.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 	}
@@ -256,12 +268,16 @@ void *child_thread(void *_task)
 		if (send_mail(to,from,from_password,cc,output_fname)==false) //sending the converted jsonfile via email., to, from , subject, body
 		{
 			printf("[-]Error in sending via Mail\n");
-			update_status(taken_task->id,"failed","Failed in transportation operation.");
+			if(!update_status(taken_task->id,"failed","Failed in transportation operation.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 		else{
 			printf("[+] Transported via MAIL\n");
-			update_status(taken_task->id,"done","Successfully reached the destination.");
+			if(!update_status(taken_task->id,"done","Successfully reached the destination.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 
 		}
@@ -286,12 +302,16 @@ void *child_thread(void *_task)
 		if (http(api,output_fname)==false) //sending the converted jsonfile via email., to, from , subject, body
 		{
 			printf("[-]Error in sending via HTTP\n");
-			update_status(taken_task->id,"failed","Failed in transportation operation.");
+			if(!update_status(taken_task->id,"failed","Failed in transportation operation.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 		else{
 			printf("[+] Transported via HTTP\n");
-			update_status(taken_task->id,"done","Successfully reached the destination.");
+			if(!update_status(taken_task->id,"done","Successfully reached the destination.")){
+				printf("ERROR : not able to update table in DATABASE\n");
+			}
 			cleanup(taken_task->fpath,output_fname);
 		}
 

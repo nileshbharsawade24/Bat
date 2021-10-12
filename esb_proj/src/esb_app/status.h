@@ -1,1 +1,1 @@
-extern void update_status(char *id, char* status,char * status_details);
+extern bool update_status(char *id, char* status,char * status_details);
