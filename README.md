@@ -58,3 +58,54 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
           chmod 777 run_client.sh
           ./run_client.sh
         ```
+        
+# Project Layout     
+```
+        
+├── Daily_Work_Report.md
+├── esb_proj
+│   ├── src
+│   │   └── esb_app
+│   │       ├── Authentication.c
+│   │       ├── Authentication.h
+│   │       ├── esb.h
+│   │       ├── ftp_transport.c
+│   │       ├── ftp_transport.h
+│   │       ├── handle_request.c
+│   │       ├── handle_request.h
+│   │       ├── http_Transport.c
+│   │       ├── http_transport.h
+│   │       ├── makefile
+│   │       ├── mysqlconnect.c
+│   │       ├── mysqlconnect.h
+│   │       ├── server
+│   │       ├── server.c
+│   │       ├── setup.c
+│   │       ├── smtp.c
+│   │       ├── smtp.h
+│   │       ├── status.c
+│   │       ├── status.h
+│   │       ├── threads.c
+│   │       ├── threads.h
+│   │       ├── transform.c
+│   │       ├── transform.h
+│   │       ├── xml_parsing.c
+│   │       └── xml_parsing.h
+│   └── Test
+│       ├── Client
+│       │   ├── BMD_CHECKSTATUS.xml
+│       │   ├── BMD_EMAIL.xml
+│       │   ├── BMD_FAILED1.xml
+│       │   ├── BMD_FAILED2.xml
+│       │   ├── BMD_FTP.xml
+│       │   ├── BMD_HTTP.xml
+│       │   ├── client.c
+│       │   └── run_client.sh
+│       └── Unit_test
+│           ├── munit.c
+│           ├── munit.h
+│           └── test.c
+├── mysql_dump.sql
+└── README.md
+
+```
