@@ -148,8 +148,6 @@ static MunitResult test_update_status(const MunitParameter params[], void* user_
 }
 
 static MunitResult test_validation(const MunitParameter params[], void* user_data){
-   // if(check_transform(create_bmd_structure("user_app_123x","email_dest_123","send_mail"))!=NULL)return MUNIT_FAIL;
-  //bmd *test = ;
   MYSQL *con = connect_mysql();
 
   munit_assert_true((validation(con, create_bmd_structure("user_app_123","email_dest_123","send_mail"),"json")));
@@ -171,15 +169,20 @@ static MunitResult test_authentication(const MunitParameter params[], void* user
   return MUNIT_OK;
 }
 
+static MunitResult test_insert(const MunitParameter params[], void* user_data){
+  MYSQL *con = connect_mysql();
+
+  if(insert(con,create_bmd_structure("user_app_123","email_dest_123","send_mail"),"json")!=NULL)return MUNIT_FAIL;
+
+  return MUNIT_OK;
+} 
+
 // static MunitResult test_parser(const MunitParameter params[], void* user_data){
 
 //   return MUNIT_OK;
 // }
 
-// static MunitResult test_insert(const MunitParameter params[], void* user_data){
 
-//   return MUNIT_OK;
-// } 
 
 /* The setup function, if you provide one, for a test will be run
  * before the test, and the return value will be passed as the sole
@@ -228,6 +231,8 @@ static MunitTest test_suite_tests[] = {
   { (char*)"/test_for_check_transform", test_check_transform, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_authentication", test_authentication, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_validation", test_validation, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+    {(char*)"/test_for_insert", test_insert, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 

@@ -55,6 +55,7 @@ void* serve(void * fd){
       if (mysql_query(con, query)){
         printf("ERROR : unable to query `%s` database.\n",query);
       }
+      
       MYSQL_RES *result_rows = mysql_store_result(con);
       MYSQL_ROW result_row=mysql_fetch_row(result_rows);
       char * temp;
@@ -140,8 +141,7 @@ void request_handler()
   printf("Waiting for a connection...\n");
   listen(sockfd, NUM_THREADS); // Listening socket file discripter
 
-  //defining thread
-	pthread_t threads[NUM_THREADS];
+  //defining thread _THREADS];
   unsigned int count=0;
   len = sizeof(cl_addr);
   for (;;)

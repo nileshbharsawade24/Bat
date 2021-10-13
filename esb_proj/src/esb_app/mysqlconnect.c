@@ -26,7 +26,8 @@
 
 char* insert(MYSQL *con, bmd *msg, char *filename)
 {
-
+	if(con==NULL || msg==NULL || filename== NULL) return NULL;
+	
 	char *q = (char *)malloc(500); // memory allocation to string query which nis going to be concated tor insert query
 	q[0] = '\0';
 	strcat(q, "insert into esb_request(sender_id,dest_id, message_id, message_type,data_location,status,status_details,reference_id,received_on) values ('");
@@ -103,7 +104,7 @@ bool validation(MYSQL *con, bmd *msg, char *file)
 	if(con==NULL || msg==NULL ||file==NULL ) {
 		return false;
 	}
-	
+
 	char *temp, *temp2, *temp3;
 	if ((mysql_query(con, "select *from routes")))
 	{
