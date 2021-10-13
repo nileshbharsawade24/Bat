@@ -11,48 +11,23 @@
 #define pass "test_password"
 #define dbname "BAT_DB"
 
-// //struct for input message body and metadata
-// typedef struct
-// {
-// 	char *MessageID;
-// 	char *Sender;
-// 	char *Destination;
-// 	char *MessageType;
-// 	char *Payload;
-// 	char *ReferenceID;
-// } bmd;
-
 /* fuction to insert the data to mysql*/
 
 char* insert(MYSQL *con, bmd *msg, char *filename)
 {
-	if(con==NULL || msg==NULL || filename== NULL) return NULL;
-	
+	if(!con || !msg || !filename)return NULL;
+	FILE * fp=fopen(filename,"r");
+	if(!fp)return NULL;
+	fclose(fp);
 	char *q = (char *)malloc(500); // memory allocation to string query which nis going to be concated tor insert query
-	q[0] = '\0';
-	strcat(q, "insert into esb_request(sender_id,dest_id, message_id, message_type,data_location,status,status_details,reference_id,received_on) values ('");
-	strcat(q, msg->envelop.Sender);
-	strcat(q, "', '");
-	strcat(q, msg->envelop.Destination);
-	strcat(q, "', '");
-	strcat(q, msg->envelop.MessageID);
-	strcat(q, "', '");
-	strcat(q, msg->envelop.MessageType);
-	strcat(q, "', '");
-	strcat(q, filename);
-	strcat(q, "', '");
-	strcat(q, "Available");
-	strcat(q, "', '");
-	strcat(q, "Yet to process");
-	strcat(q, "', '");
-	strcat(q, msg->envelop.ReferenceID);
-	strcat(q, "', ");
-	strcat(q, "now()");
-	strcat(q, " )");
+	if(sprintf(q,"INSERT INTO esb_request"
+                     "(sender_id,dest_id,message_type,reference_id,message_id,received_on,data_location,status,processing_attempts,status_details) "
+                     "VALUES ('%s','%s','%s','%s','%s',now(),'%s','available',0,'Yet to process')",\
+										 msg->envelop.Sender,msg->envelop.Destination,msg->envelop.MessageType,msg->envelop.ReferenceID,msg->envelop.MessageID,filename\
+						)>499)return NULL;
 	if (mysql_query(con, q))
 	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
+		return NULL;
 	}
 	free(q);
 	if (mysql_query(con, "SELECT LAST_INSERT_ID()")){
@@ -98,7 +73,7 @@ MYSQL *connect_mysql()
 /*validation of BMD*/
 
 bool validation(MYSQL *con, bmd *msg, char *file)
-{	
+{
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	if(con==NULL || msg==NULL ||file==NULL ) {

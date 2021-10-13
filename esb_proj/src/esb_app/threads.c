@@ -67,6 +67,7 @@ char *check_transform(bmd *msg)
 
 transport_data* check_transport(bmd * msg)
 {
+	if(msg==NULL)return NULL;
 	char t[1001];
 	char *transform_key;
 	MYSQL *con = connect_mysql();
@@ -75,26 +76,30 @@ transport_data* check_transport(bmd * msg)
 	snprintf(t, sizeof(t), ROUTE_ID, msg->envelop.Sender, msg->envelop.Destination, msg->envelop.MessageType);
 	if (mysql_query(con, t))
 	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
+		return NULL;
 	}
+
 	MYSQL_RES * res = res = mysql_store_result(con);
 	char * route_id;
+	bool flag=false;
 	while (row = mysql_fetch_row(res))
 	{
+		flag=true;
 		route_id = row[0];
 	}
+	if(!flag)return NULL;
   bzero(t,strlen(t));
 	snprintf(t, sizeof(t), "select config_key,config_value from transport_config where route_id=%s", route_id);
 	if (mysql_query(con, t))
 	{
-		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));
-		exit(1);
+		return NULL;
 	}
 	res = mysql_store_result(con);
 	transport_data* td=NULL,*temp;
+	flag=false;
 	while (row = mysql_fetch_row(res))
 	{
+		flag=true;
 		if(td==NULL){
 			td=malloc(sizeof(transport_data));
 			temp=td;
@@ -106,6 +111,7 @@ transport_data* check_transport(bmd * msg)
 		temp->data.key = row[0];
 		temp->data.value = row[1];
 	}
+	if(!flag)return NULL;
 	temp->next=NULL;
 	mysql_close(con);
 	return td;

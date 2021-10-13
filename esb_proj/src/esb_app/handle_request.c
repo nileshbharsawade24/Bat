@@ -12,7 +12,7 @@
 #include "handle_request.h"
 #include "Authentication.h"
 
-#define PORT 8887
+#define PORT 4444
 #define BUF_SIZE 2000
 #define CLADDR_LEN 100
 #define SIZE 1024
