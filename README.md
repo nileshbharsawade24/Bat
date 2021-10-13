@@ -28,11 +28,11 @@ In your mysql server, create a user with  name *test_user*, password *test_passw
         GRANT ALL ON BAT_DB.* TO 'test_user';
         ```
 * **Populate created Database**
-    1. you can find the SQL dump file "mysq_dump.sql" in main directory. Dump that using below command :<br/>
+    * you can find the SQL dump file "mysq_dump.sql" in main directory. Dump that using below command :<br/>
         ```
         mysql -u test_user -p BAT_DB < mysql_dump.sql
         ```
-    2. OR use setup.c file. Go inside this path "esb_proj/src/esb_app/" and use below commands :<br/>
+    * OR use setup.c file. Go inside this path "esb_proj/src/esb_app/" and use below commands :<br/>
         ```
           make clean
           make setup
@@ -112,6 +112,7 @@ Make sure no process is running on port number 4444 .
 ```
 
 # UNIT Testing
+Before running unit tests, make sure that Database is setup .  
 * Go inside this path mentioned "esb_proj/Test/Unit_test/" and run server using below commands :<br/>
     ```
       make clean
