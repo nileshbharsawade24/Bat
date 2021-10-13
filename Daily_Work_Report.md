@@ -23,3 +23,5 @@
 | **PROJECT REPOSITORY FLIPED** |  **OLD REPOSITORY -> CAMEL** | **NEW_REPOSITORY -> BAT**|
 | 7 Oct 2021   | Code reading | Code reading |
 | 8 Oct 2021   | Warning removed, Code integration , HTML Transformation | Warning removed, fixed race conditions, Code integration with FTP correction |
+| 11 Oct 2021  | SMTP Correction | Code Integration |
+| 12 Oct 2021  | Read Unit testing and Done Unit Testing  | Read Unit testing and Done Unit Testing |
