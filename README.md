@@ -27,7 +27,9 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
     ```
 
 ## HTTP api to test http_transport() external api (Reference)
-    * https://reqbin.com/echo/post/json
+
+    https://reqbin.com/echo/post/json
+
 
 ### Setup database:
 * you can find the SQL dump file "mysq_dump.sql" in main directory. Dump that using below command :<br/>
@@ -43,6 +45,7 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
 
 
 ## Running ESB_APPLICATION
+Make sure no process is running on port number 4444 .
 * Server
     * Go inside this path mentioned "esb_proj/src/esb_app/" and run server using below commands :<br/>
         ```
@@ -68,7 +71,9 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
       ./test
      ```
 * Unit Testing Report
-  
+
+  Unit testing of 'database poller' and 'esb request handler' function has been skipped since they are threads shared continuously running void functions.
+
   <img src="/unit_testing_report.png" width=auto height=auto>
 
 # Project Layout     
@@ -90,7 +95,6 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
 │   │       ├── makefile
 │   │       ├── mysqlconnect.c
 │   │       ├── mysqlconnect.h
-│   │       ├── server
 │   │       ├── server.c
 │   │       ├── setup.c
 │   │       ├── smtp.c
@@ -114,10 +118,12 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
 │       │   ├── client.c
 │       │   └── run_client.sh
 │       └── Unit_test
+│           ├── makefile
 │           ├── munit.c
 │           ├── munit.h
 │           └── test.c
 ├── mysql_dump.sql
 └── README.md
+└── unit_testing_report.png
 
 ```

@@ -137,7 +137,28 @@ static MunitResult test_check_transform(const MunitParameter params[], void* dat
   if(check_transform(create_bmd_structure("user_app_123x","email_dest_123","send_mail"))!=NULL)return MUNIT_FAIL;
   if(check_transform(create_bmd_structure("user_app_123","email_dest_123x","send_mail"))!=NULL)return MUNIT_FAIL;
   if(check_transform(create_bmd_structure("user_app_123","email_dest_123","send_mailx"))!=NULL)return MUNIT_FAIL;
+  if(check_transform(create_bmd_structure("user_app,_123","email_dest_123","send_mailx"))!=NULL)return MUNIT_FAIL;
+  if(check_transform(create_bmd_structure(NULL,"email_dest_123","send_mail"))!=NULL)return MUNIT_FAIL;
+  if(check_transform(create_bmd_structure("user_app_123",NULL,"send_mail"))!=NULL)return MUNIT_FAIL;
+  if(check_transform(create_bmd_structure("user_app_123","email_dest_123",NULL))!=NULL)return MUNIT_FAIL;
+  if(check_transform(create_bmd_structure(NULL,NULL,NULL))!=NULL)return MUNIT_FAIL;
   if(check_transform(NULL)!=NULL)return MUNIT_FAIL;
+  return MUNIT_OK;
+}
+
+static MunitResult test_check_transport(const MunitParameter params[], void* data) {
+  if(check_transform(create_bmd_structure("user_app_123","http_dest_123","hit_api"))==NULL)return MUNIT_FAIL;
+  if(check_transform(create_bmd_structure("user_app_123","ftp_dest_123","transfer_file"))==NULL)return MUNIT_FAIL;;
+  if(check_transform(create_bmd_structure("user_app_123","email_dest_123","send_mail"))==NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure("user_app_123x","email_dest_123","send_mail"))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure("user_app_123","email_dest_123x","send_mail"))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure("user_app_123","email_dest_123","send_mailx"))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure("user_app,_123","email_dest_123","send_mailx"))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure(NULL,"email_dest_123","send_mail"))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure("user_app_123",NULL,"send_mail"))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure("user_app_123","email_dest_123",NULL))!=NULL)return MUNIT_FAIL;
+  if(check_transport(create_bmd_structure(NULL,NULL,NULL))!=NULL)return MUNIT_FAIL;
+  if(check_transport(NULL)!=NULL)return MUNIT_FAIL;
   return MUNIT_OK;
 }
 
@@ -244,15 +265,35 @@ static MunitResult test_xml_parsing(const MunitParameter params[], void* user_da
   return MUNIT_OK;
 }
 
-// static MunitResult test_parser(const MunitParameter params[], void* user_data){
+static MunitResult test_insert(const MunitParameter params[], void* data) {
+  MYSQL * con =connect_mysql();
+  if(insert(con,create_bmd_structure("user_app_123","http_dest_123","hit_api"),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_app_123","email_dest_123","send_mail"),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_app_123","ftp_dest_123","transfer_file"),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure(NULL,"http_dest_123","hit_api"),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_app_123",NULL,"send_mail"),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_app_123","ftp_dest_123",NULL),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_app_123","http_dest_123","hit_api"),NULL)!=NULL)return MUNIT_FAIL;
+  if(insert(NULL,create_bmd_structure("user_app_123","http_dest_123","hit_api"),"munit.h")!=NULL)return MUNIT_FAIL;
+  if(insert(con,NULL,"munit.h")!=NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_,,,,app_123","http_dest_123","hit_api"),"munit.h")==NULL)return MUNIT_FAIL;
+  if(insert(con,create_bmd_structure("user_app_123","http_dest_123","hit_api"),"mufdnit.h")!=NULL)return MUNIT_FAIL;
+  if(insert(NULL,NULL,NULL)!=NULL)return MUNIT_FAIL;
+  return MUNIT_OK;
+}
 
-//   return MUNIT_OK;
-// }
+static MunitResult test_mysql_connection(const MunitParameter params[], void* user_data){
+  if(connect_mysql()==NULL)return MUNIT_SKIP;
+  return MUNIT_OK;
+}
 
-// static MunitResult test_insert(const MunitParameter params[], void* user_data){
+static MunitResult test_esb_request_handler(const MunitParameter params[], void* user_data){
+  return MUNIT_SKIP;
+}
 
-//   return MUNIT_OK;
-// }
+static MunitResult test_database_poller(const MunitParameter params[], void* user_data){
+  return MUNIT_SKIP;
+}
 
 /* The setup function, if you provide one, for a test will be run
  * before the test, and the return value will be passed as the sole
@@ -273,20 +314,7 @@ test_compare_tear_down(void* fixture) {
   munit_assert_ptr_equal(fixture, (void*)(uintptr_t)0xdeadbeef);
 }
 
-static char* foo_params[] = {
-  (char*) "one", (char*) "two", (char*) "three", NULL
-};
-
-static char* bar_params[] = {
-  (char*) "red", (char*) "green", (char*) "blue", NULL
-};
-
-static MunitParameterEnum test_params[] = {
-  { (char*) "foo", foo_params },
-  { (char*) "bar", bar_params },
-  { (char*) "baz", NULL },
-  { NULL, NULL },
-};
+static MunitParameterEnum test_params[]={NULL};
 
 /* Creating a test suite is pretty simple.  First, you'll need an
  * array of tests: */
@@ -298,10 +326,15 @@ static MunitTest test_suite_tests[] = {
   { (char*)"/test_for_ftp_function", test_ftp, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { (char*)"/test_for_http_function", test_http, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { (char*)"/test_for_send_mail", test_send_mail, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  { (char*)"/test_for_check_transport", test_check_transport, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { (char*)"/test_for_check_transform", test_check_transform, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_authentication", test_authentication, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_validation", test_validation, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_xml_parsing", test_xml_parsing, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_mysql_connection", test_mysql_connection, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_insert", test_insert, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_esb_request_handler", test_esb_request_handler, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_database_poller", test_database_poller, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 

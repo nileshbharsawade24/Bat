@@ -9,7 +9,7 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <time.h>
-#define PORT 8887
+#define PORT 4444
 #define BUF_SIZE 2000
 #define SIZE 1024
 
