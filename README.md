@@ -10,7 +10,7 @@ An [ESB](https://en.wikipedia.org/wiki/Enterprise_service_bus) can be considered
 
 # Setup Database
 * **Create user and Database**    
-In your mysql server, create a user with  name *test_user*, password *test_password* and have all access grant on *BAT_DB* database.One can do this with following steps:<br />
+In your mysql server, create a user with  name *test_user*, password *test_password* and give all access grant on *BAT_DB* database.One can do this with following steps:<br />
     1. Open mysql promt with sudo privilege
         ```
         sudo mysql
@@ -28,7 +28,7 @@ In your mysql server, create a user with  name *test_user*, password *test_passw
         GRANT ALL ON BAT_DB.* TO 'test_user';
         ```
 * **Populate created Database**
-    * you can find the SQL dump file "mysq_dump.sql" in main directory. Dump that using below command :<br/>
+    * you can find the SQL dump file "mysql_dump.sql" in main directory. Dump that using below command :<br/>
         ```
         mysql -u test_user -p BAT_DB < mysql_dump.sql
         ```
