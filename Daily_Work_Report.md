@@ -25,3 +25,4 @@
 | 8 Oct 2021   | Warning removed, Code integration , HTML Transformation | Warning removed, fixed race conditions, Code integration with FTP correction |
 | 11 Oct 2021  | SMTP Correction | Code Integration |
 | 12 Oct 2021  | Read Unit testing and Done Unit Testing  | Read Unit testing and Done Unit Testing |
+| 13 Oct 2021  | Code commentation and project demo  | Unit testing, Documentation and project demo |
