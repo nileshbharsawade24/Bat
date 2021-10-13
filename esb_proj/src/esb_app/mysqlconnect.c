@@ -15,11 +15,14 @@
 
 char* insert(MYSQL *con, bmd *msg, char *filename)
 {
-	if(!con || !msg || !filename)return NULL;
+	if(!con || !msg || !filename)return NULL; //For unit testing
+
 	FILE * fp=fopen(filename,"r");
 	if(!fp)return NULL;
 	fclose(fp);
-	char *q = (char *)malloc(500); // memory allocation to string query which nis going to be concated tor insert query
+
+	char *q = (char *)malloc(500); // memory allocation to string query which is going to be concatented tor insert query
+	//writing the query 
 	if(sprintf(q,"INSERT INTO esb_request"
                      "(sender_id,dest_id,message_type,reference_id,message_id,received_on,data_location,status,processing_attempts,status_details) "
                      "VALUES ('%s','%s','%s','%s','%s',now(),'%s','available',0,'Yet to process')",\
@@ -30,14 +33,17 @@ char* insert(MYSQL *con, bmd *msg, char *filename)
 		return NULL;
 	}
 	free(q);
+
 	if (mysql_query(con, "SELECT LAST_INSERT_ID()")){
 		return NULL;
 	}
+
+	//stroing result of query
 	MYSQL_RES *result_rows = mysql_store_result(con);
 	MYSQL_ROW result_row=mysql_fetch_row(result_rows);
 	// printf("%s %s\n",result_row[0],result_row[1]);
 	if(result_row){
-		return result_row[0];
+		return result_row[0]; //returning the correlation ID for check Status
 	}
 	return NULL;
 }
@@ -80,7 +86,7 @@ bool validation(MYSQL *con, bmd *msg, char *file)
 		return false;
 	}
 
-	char *temp, *temp2, *temp3;
+	//char *temp, *temp2, *temp3;
 	if ((mysql_query(con, "select *from routes")))
 	{
 		fprintf(stderr, "ERROR: %s [%d]\n", mysql_error(con), mysql_errno(con));

@@ -22,12 +22,3 @@ typedef struct {
 }bmd;
 
 #endif
-// typedef struct {
-//     char* sender;
-//     char* destination;
-//     char* message_type;
-//     char* message_id;
-//     char* signature;
-//     char* reference_id;
-//     char* create_on;
-// } bmd_envelop;

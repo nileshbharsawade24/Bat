@@ -1,22 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-// int i = 0;
+
+
 /*transforming to json*/
 
 char *transform_to_json(char *token, char *payload)
 {
   if(!token || !payload)return NULL;
+
   char *file = malloc(50*(sizeof(char)));
   char op[1001];
-  if(sprintf(file, ".tmp/%s.json",token)>49){
+  if(sprintf(file, ".tmp/%s.json",token)>49){ //creating file in tmp folder
     return NULL;
   }
   char* field1=strtok(payload,",");
   char* field2=payload;
   if(strlen(payload)>900)return NULL;
   snprintf(op, sizeof(op), "{\n\t\"acc_no\": \"%s\",\n\t\"acc_type\": \"%s\"\n}", field1, field2);
-  FILE *fp = fopen(file, "w"); //open that file
+  FILE *fp = fopen(file, "w"); //opening file in writing mode
   if(fp==NULL){
     return NULL;
   }
@@ -30,8 +32,10 @@ char * transform_to_csv(char *token, char *payload)
 {
   if(!token || !payload)return NULL;
   char * fpath=malloc(50*(sizeof(char)));
+
   if(sprintf(fpath, ".tmp/%s.csv",token)>49)return NULL;
-  FILE *fp = fopen(fpath, "w"); //open that file
+
+  FILE *fp = fopen(fpath, "w"); //opening the file in w mode
   if(fp==NULL)return NULL;
   fprintf(fp, "%s",payload);
   fclose(fp);

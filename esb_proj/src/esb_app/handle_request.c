@@ -17,22 +17,26 @@
 #define CLADDR_LEN 100
 #define SIZE 1024
 #define NUM_THREADS 5
-// to write the file in temporary file in directory with return as that filename
+
+// to write the file in temporary file in directory its returns the filename
 char* write_file(int sockfd)
 {
   int n;
   FILE *fp;
   char buffer[SIZE];
-  //Create unique filename
+
+  //Create unique filename using time stamp
   unsigned long tm=(unsigned long)time(NULL);
 	char *filename = malloc(50 * sizeof(char));
-	sprintf(filename, "./.tmp/BMD_%d_%lu.xml", sockfd, tm);
-  fp = fopen(filename, "w"); //open that file
+	sprintf(filename, "./.tmp/BMD_%d_%lu.xml", sockfd, tm);  // if there are concurrency in request two file will have same name so we are using sockfd also
+  fp = fopen(filename, "w"); //opening file in writing mode
 
   struct timeval tv;
-  tv.tv_sec=1; //2 second timer
+  tv.tv_sec=1; //1 second timer
   setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv, sizeof tv);
+
   //usefull link : https://stackoverflow.com/questions/40493016/cant-receive-data-from-socket
+
   while(read(sockfd,buffer,SIZE)>=0){
     fprintf(fp, "%s", buffer);
     bzero(buffer, SIZE);
@@ -43,12 +47,15 @@ char* write_file(int sockfd)
 
 void* serve(void * fd){
   int sockfd=*(int*)fd;
-  char * filename = write_file(sockfd); //send to write the input file into directory and return that filename
+  char * filename = write_file(sockfd); //send to write the input file into directory and return the filename
   MYSQL *con = connect_mysql(); // establish connection between the MySql and server
-  bmd *request_message = do_parse(filename); // parse that file into valid BMD format and return the BMD
+  bmd *request_message = do_parse(filename); // parse the BMD file and return BMD data structure 
+
   char * reply=malloc(500*sizeof(char));
-  if(Authentication(request_message->envelop.Signature)){//function defination is in Authentication.c file
-    //checking spcial case
+  // Authenticating the request
+  if(Authentication(request_message->envelop.Signature)){
+
+    //------checking spcial case -> Check status functionality added--------- In case BMD request is for checking status for a particular corr ID
     if(strcmp(request_message->envelop.Destination,"ESB")==0 && strcmp(request_message->envelop.MessageType,"CheckStatus")==0){
       char * query=malloc(100*sizeof(char));
       sprintf(query,"select status from esb_request where id=%s",request_message->envelop.ReferenceID);
@@ -70,8 +77,12 @@ void* serve(void * fd){
                     "-----------------------------------------------------------------------\n",request_message->envelop.ReferenceID,temp);
     }
     else{
-      if(validation(con, request_message, filename)){ // Validation by using Validation Function Call
-        char * correlation_id=insert(con, request_message, filename);
+      // If authentication is done , we will do validation of request which requires to have some necessary fields in the BMD 
+
+      if(validation(con, request_message, filename)){ 
+
+        // At this point both authentication and validation are successful so now we can insert the request into esb_request.
+        char * correlation_id=insert(con, request_message, filename); //saving corr ID which is returned by insert function 
         // printf("-->%s\n",correlation_id);
         sprintf(reply,"-----------------------------------------------------------------------\n"
                       "REQUEST ACCEPTED.\n"
@@ -94,12 +105,13 @@ void* serve(void * fd){
   if(write(sockfd, reply, strlen(reply))<0){
     printf("ERROR : NOT sended\n");
   }
+  //freeing memory
   free(reply);
   mysql_close(con);
   close(sockfd);
   printf("Closing Client Socket FD %d.\n",sockfd);
   printf("**************************************\n\n");
-  pthread_exit(NULL);
+  pthread_exit(NULL); // one request handling flow completed for an individual client.
 }
 
 void request_handler()
@@ -125,7 +137,7 @@ void request_handler()
 
   memset(&addr, 0, sizeof(addr)); // filling memory with a constant byte
 
-  // assigning structure values
+  // server configarations
   addr.sin_family = AF_INET;
   addr.sin_addr.s_addr = INADDR_ANY;
   addr.sin_port = PORT;
@@ -141,12 +153,12 @@ void request_handler()
   printf("Waiting for a connection...\n");
   listen(sockfd, NUM_THREADS); // Listening socket file discripter
 
-  //defining thread _THREADS];
+  //We will use 5 threads which  can run parrallely
   pthread_t threads[NUM_THREADS];
   unsigned int count=0;
   len = sizeof(cl_addr);
   for (;;)
-  { //infinite loop to listen continous connection made by client
+  { //infinite loop to continously listening
 
     int * clientsockfd=malloc(sizeof(int));
     *clientsockfd = accept(sockfd, (struct sockaddr *)&cl_addr, &len); // making connection
@@ -157,8 +169,8 @@ void request_handler()
     }
     printf("Connection accepted for Client Socket FD %d.\n",*clientsockfd);
 
-    // child thread will handle client
-    if(pthread_create(&threads[count%NUM_THREADS],NULL,serve,clientsockfd)!=0){
+    // child thread will handle client ,
+    if(pthread_create(&threads[count%NUM_THREADS],NULL,serve,clientsockfd)!=0){ // create a thread which will work on serve function.
 			 printf ("ERROR: child thread not created\n");
 			 exit(-1);
 		}

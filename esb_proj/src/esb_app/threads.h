@@ -7,6 +7,7 @@
 #include "transform.h"
 #include <curl/curl.h>
 #include "smtp.h"
+
 // #define DETAILS "select sender_id,dest_id,message_type from esb_request where id=%s"
 #define ROUTE_ID "select route_id from routes where sender='%s' && destination='%s' && message_type='%s'"
 

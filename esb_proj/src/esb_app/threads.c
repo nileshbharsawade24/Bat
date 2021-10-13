@@ -11,9 +11,7 @@
 #include "ftp_transport.h"
 #include "smtp.h"
 #define NUM_THREADS 5
-// static char *unix_socket = NULL;
-//unsigned int port = 3306; // mysql-server port number
-//unsigned int flag = 0;
+
 
 void cleanup(char * bmd_file, char* output_file){
 	remove(bmd_file);

@@ -8,8 +8,10 @@
 #include <stdbool.h>
 #include <curl/curl.h>
 #include "smtp.h"
+
 // #define FROM_ADDR "<esbtest321@gmail.com>"
 // #define CC_ADDR "<rohitbhamu6@gmail.com>"
+
 bool send_mail(char *to, char *from, char *from_password, char *cc, char *filename)
 {
   if(!to || !from || !from_password || !cc || !filename)return false;
@@ -33,7 +35,7 @@ bool send_mail(char *to, char *from, char *from_password, char *cc, char *filena
     recipients = curl_slist_append(recipients, cc);
     curl_easy_setopt(curl, CURLOPT_MAIL_RCPT, recipients);
 
-    //JSON file to be send
+    //html file to be send
     char *filepath = filename;
     FILE *fd = fopen(filepath, "r");
     if(fd==NULL)return false;

@@ -2,6 +2,7 @@
 #include "status.h"
 #include "mysqlconnect.h"
 
+//this is for special case where a bmd is request for status details of an individual corr ID.
 bool update_status(char *id, char* status,char * status_details)
 {
 	MYSQL *con = connect_mysql();

@@ -12,12 +12,12 @@ bool Authentication(char *sign)
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char *temp;
-	//char *temp,*temp2,*temp3;
+	
 
-	// printf("Connected to mysql-server\n");
-	// printf("\n");
 	char z[1001];
 
+//	 retriving access token from databases which will be used to authenticate the BMD
+ 
 	snprintf(z, sizeof(z), "select count(id) from auth where signature='%s'", sign);
 	if ((mysql_query(con, z)))
 	{
@@ -44,6 +44,7 @@ bool Authentication(char *sign)
 		return true;
 	}
 }
+
 /*void main (){
  Authentication("63f5f61f7a79301f715433f8f3689390d1f5da4f855169023300491c00b8113c");
  }*/
