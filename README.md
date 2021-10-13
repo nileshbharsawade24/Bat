@@ -67,19 +67,9 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
       make test
       ./test
      ```
-* Report
-  ```
-  Running test suite with seed 0x77459755...
-  /test_for_update_status_function     [ OK    ] [ 0.33539153 / 0.00659327 CPU ]
-  /test_for_transform_to_json_function [ OK    ] [ 0.00081235 / 0.00081228 CPU ]
-  /test_for_transform_to_csv_function  [ OK    ] [ 0.00079201 / 0.00079210 CPU ]
-  /test_for_transform_to_html_function [ OK    ] [ 0.00084102 / 0.00084091 CPU ]
-  /test_for_ftp_function               [ OK    ] [ 0.01143976 / 0.00129126 CPU ]
-  /test_for_http_function              [ OK    ] [ 1.00304227 / 0.03937125 CPU ]
-  /test_for_send_mail                  [ OK    ] [ 7.45204351 / 0.02348096 CPU ]
-  /test_for_check_transform            [ OK    ] [ 0.00813210 / 0.00444104 CPU ]
-  8 of 8 (100%) tests successful, 0 (0%) test skipped.
-  ```
+* Unit Testing Report
+  
+  <img src="/unit_testing_report.png" width=auto height=auto>
 
 # Project Layout     
 ```
