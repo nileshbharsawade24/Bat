@@ -140,5 +140,3 @@ Before running unit tests, make sure that Database is setup .
 [Pavan Kolur](https://github.com/pavankolur123)  
 [Deepak kumar](https://github.com/deepakjnv880)  
 [Rohit bhamu](https://github.com/rohitbhamu)
-
-# Happy coding :slightly_smiling_face: .
