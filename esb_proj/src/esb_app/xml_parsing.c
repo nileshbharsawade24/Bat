@@ -85,5 +85,14 @@ bmd* do_parse(char *file){
     msg->envelop.ReferenceID=get_element_text("//ReferenceID", doc);
     msg->envelop.Signature=get_element_text("//Signature", doc);
     msg->envelop.CreationDateTime=get_element_text("//CreationDateTime", doc);
+
+    if(msg->envelop.Destination==NULL)msg->envelop.Destination="";
+    if(msg->envelop.MessageID==NULL)msg->envelop.MessageID="";
+    if(msg->envelop.MessageType==NULL)msg->envelop.MessageType="";
+    if(msg->envelop.Sender==NULL)msg->envelop.Sender="";
+    if(msg->envelop.ReferenceID==NULL)msg->envelop.ReferenceID="";
+    if(msg->envelop.Signature==NULL)msg->envelop.Signature="";
+    if(msg->envelop.CreationDateTime==NULL)msg->envelop.CreationDateTime="";
+    if(msg->payload==NULL)msg->payload="";
     return msg;
 }

@@ -122,6 +122,11 @@ bmd * create_bmd_structure(char* f1,char * f2,char * f3){
   msg->envelop.ReferenceID="dummy";
   msg->envelop.Signature="dummy";
   msg->envelop.CreationDateTime="dummy";
+
+  if(msg->envelop.Destination==NULL)msg->envelop.Destination="";
+  if(msg->envelop.MessageType==NULL)msg->envelop.MessageType="";
+  if(msg->envelop.Sender==NULL)msg->envelop.Sender="";
+
   return msg;
 }
 
@@ -158,6 +163,7 @@ static MunitResult test_validation(const MunitParameter params[], void* user_dat
   munit_assert_false((validation(con, create_bmd_structure("invalid_sender","email_dest_123","send_mail"),"json")));
   munit_assert_false((validation(con, create_bmd_structure("user_app_123","invalid_destination","send_mail"),"json")));
   munit_assert_false((validation(con, create_bmd_structure("user_app_123","email_dest_123","wrong_message_type"),"json")));
+  munit_assert_false((validation(con, NULL,"json")));
   return MUNIT_OK;
 }
 
@@ -167,7 +173,74 @@ static MunitResult test_authentication(const MunitParameter params[], void* user
   munit_assert_false(Authentication("wrong_auth_token"));
   munit_assert_false(Authentication("it_should_fail"));
   munit_assert_false(Authentication("testing_is_going_in_right_direction"));
+  munit_assert_false(Authentication(NULL));
 
+  return MUNIT_OK;
+}
+
+char* build_bmd_file(bmd * msg){
+  char * file_name="bmd.xml";
+  FILE * fp=fopen(file_name,"w");
+  fprintf(fp,
+  "<BMD>\n\
+  <Envelop>\n\
+      <MessageID>%s</MessageID>\n\
+      <MessageType>%s</MessageType>\n\
+      <Sender>%s</Sender>\n\
+      <Destination>%s</Destination>\n\
+      <CreationDateTime>%s</CreationDateTime>\n\
+      <Signature>%s</Signature>\n\
+      <ReferenceID>%s</ReferenceID>\n\
+  </Envelop>\n\
+  <Payload>%s</Payload>\n\
+  </BMD>",\
+  msg->envelop.MessageID,msg->envelop.MessageType,msg->envelop.Sender,msg->envelop.Destination,\
+  msg->envelop.CreationDateTime,msg->envelop.Signature,msg->envelop.ReferenceID,msg->payload);
+  fclose(fp);
+  return file_name;
+}
+
+bool compare_object(bmd* b1, bmd* b2){
+  return (
+    strcmp(b1->envelop.MessageID,b2->envelop.MessageID)==0 && \
+    strcmp(b1->envelop.MessageType,b2->envelop.MessageType)==0 && \
+    strcmp(b1->envelop.Sender,b2->envelop.Sender)==0 && \
+    strcmp(b1->envelop.Destination,b2->envelop.Destination)==0 && \
+    strcmp(b1->envelop.CreationDateTime,b2->envelop.CreationDateTime)==0 && \
+    strcmp(b1->envelop.Signature,b2->envelop.Signature)==0 && \
+    strcmp(b1->envelop.ReferenceID,b2->envelop.ReferenceID)==0 && \
+    strcmp(b1->payload,b2->payload)==0
+  );
+}
+
+static MunitResult test_xml_parsing(const MunitParameter params[], void* user_data){
+  bmd * B=create_bmd_structure("user_app_123","email_dest_123","send_mail");
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  if(do_parse(NULL)!=NULL)return MUNIT_FAIL;
+  if(do_parse("isdvn")!=NULL)return MUNIT_FAIL;
+  B=create_bmd_structure("user_app_123","","send_mail");
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  B=create_bmd_structure("","email_dest_123","send_mail");
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  B=create_bmd_structure("user_app_123","email_dest_123","");
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  B=create_bmd_structure("user_app_123",NULL,"send_mail");
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  B=create_bmd_structure(NULL,"email_dest_123","send_mail");
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  B=create_bmd_structure("user_app_123","email_dest_123",NULL);
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  B=create_bmd_structure(NULL,NULL,NULL);
+  munit_assert_true(compare_object(do_parse(build_bmd_file(B)),B));
+  free(B);
+  remove("bmd.xml");
   return MUNIT_OK;
 }
 
@@ -179,7 +252,7 @@ static MunitResult test_authentication(const MunitParameter params[], void* user
 // static MunitResult test_insert(const MunitParameter params[], void* user_data){
 
 //   return MUNIT_OK;
-// } 
+// }
 
 /* The setup function, if you provide one, for a test will be run
  * before the test, and the return value will be passed as the sole
@@ -228,6 +301,7 @@ static MunitTest test_suite_tests[] = {
   { (char*)"/test_for_check_transform", test_check_transform, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_authentication", test_authentication, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   {(char*)"/test_for_validation", test_validation, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
+  {(char*)"/test_for_xml_parsing", test_xml_parsing, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL},
   { NULL, NULL, NULL, NULL, MUNIT_TEST_OPTION_NONE, NULL }
 };
 

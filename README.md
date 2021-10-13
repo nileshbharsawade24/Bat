@@ -29,7 +29,7 @@ Also make sure in your mysql server, there is a user with  name *test_user*, pas
 ## HTTP api to test http_transport() external api (Reference)
     * https://reqbin.com/echo/post/json
 
-### Setting up database:
+### Setup database:
 * you can find the SQL dump file "mysq_dump.sql" in main directory. Dump that using below command :<br/>
     ```
     mysql -u test_user -p BAT_DB < mysql_dump.sql

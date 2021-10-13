@@ -97,13 +97,13 @@ MYSQL *connect_mysql()
 /*validation of BMD*/
 
 bool validation(MYSQL *con, bmd *msg, char *file)
-{	
+{
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	if(con==NULL || msg==NULL ||file==NULL ) {
 		return false;
 	}
-	
+
 	char *temp, *temp2, *temp3;
 	if ((mysql_query(con, "select *from routes")))
 	{

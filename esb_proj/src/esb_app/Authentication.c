@@ -7,6 +7,7 @@ run ./aut
 
 bool Authentication(char *sign)
 {
+	if(sign==NULL)return false;
 	MYSQL *con=connect_mysql();
 	MYSQL_RES *res;
 	MYSQL_ROW row;
